@@ -292,9 +292,26 @@ const closeCart = document.getElementById('close-cart');
 const checkoutModal = document.getElementById('checkout-modal');
 const closeCheckout = document.getElementById('close-checkout');
 
-if (cartBtn) cartBtn.addEventListener('click', () => { cartModal.classList.add('active'); updateCartUI(); initMap(); });
-if (closeCart) closeCart.addEventListener('click', () => cartModal.classList.remove('active'));
-if (closeCheckout) closeCheckout.addEventListener('click', () => checkoutModal.classList.remove('active'));
+if (cartBtn) {
+    cartBtn.addEventListener('click', () => { 
+        cartModal.classList.add('active'); 
+        document.body.classList.add('cart-open'); // <-- Añade esta línea
+        updateCartUI(); 
+        initMap(); 
+    });
+}
+if (closeCart) {
+    closeCart.addEventListener('click', () => {
+        cartModal.classList.remove('active');
+        document.body.classList.remove('cart-open'); // <-- Añade esta línea
+    });
+}
+if (closeCheckout) {
+    closeCheckout.addEventListener('click', () => {
+        checkoutModal.classList.remove('active');
+        document.body.classList.remove('cart-open'); // <-- Añade esta línea
+    });
+}
 
 function abrirCheckout() {
     if (cart.length === 0) return mostrarToast("Tu carrito está vacío. Añade productos primero.", "error");
@@ -302,6 +319,7 @@ function abrirCheckout() {
     document.getElementById('total-checkout').innerText = (cart.reduce((a, b) => a + b.precio, 0) + shippingCost).toFixed(2);
     cartModal.classList.remove('active');
     checkoutModal.classList.add('active');
+    document.body.classList.add('cart-open'); // <-- Añade esta línea
 }
 
 const fileInput = document.getElementById('comprobante');
@@ -354,6 +372,8 @@ async function finalizarCompra() {
 
         window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`, '_blank');
         mostrarToast("Pedido enviado con éxito.", "success");
+
+        document.body.classList.remove('cart-open'); // <-- Añade esta línea
 
         cart = []; saveCart(); updateCartUI();
         checkoutModal.classList.remove('active');

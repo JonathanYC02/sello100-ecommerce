@@ -155,3 +155,10 @@ body { background-color: var(--bg-color); color: var(--text-main); font-family: 
     .about-container { grid-template-columns: 1fr; }
     .about-image { order: -1; }
 }
+/* Ocultar botones flotantes cuando el carrito o checkout estén abiertos */
+body.cart-open .admin-float,
+body.cart-open .whatsapp-float {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
