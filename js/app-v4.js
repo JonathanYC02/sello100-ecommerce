@@ -1,24 +1,19 @@
 // ==========================================
 // 1. CONEXIÓN A GOOGLE SHEETS Y VARIABLES GLOBALES
 // ==========================================
-// ⚠️ AQUÍ PEGAMOS LA URL QUE NOS DIO APPS SCRIPT
 const GOOGLE_SHEETS_API = 'https://script.google.com/macros/s/AKfycbyAyFb8r7kqhfY8aLRfhk5vudQHRNrQAxhzgB7TynjUtLZcdcGPSzuBg82aTd-a799F/exec';
 
 let productos = [];
 let cart = JSON.parse(localStorage.getItem('sello100_cart')) || [];
 let shippingCost = 0;
 
-// Función para cargar productos desde Google Sheets
+// Función para cargar productos desde Google Sheets (JSONP)
 async function cargarProductosDesdeDB() {
-    // Creamos un nombre único para la función de callback
-    const callbackName = 'jsonpCallback_' + Date.now();
-    
-    // Esta promesa se resolverá cuando el script de Google llame a la función
     return new Promise((resolve, reject) => {
-        // Definimos la función global que Google llamará
+        const callbackName = 'jsonpCallback_' + Date.now();
+        
         window[callbackName] = (data) => {
             try {
-                // Adaptamos los datos
                 productos = data.map(p => ({
                     id: Number(p.id),
                     nombre: p.nombre,
@@ -28,28 +23,24 @@ async function cargarProductosDesdeDB() {
                     tela: p.tela
                 }));
                 
-                renderProducts(); // Dibujamos las tarjetas
-                resolve(); // Terminamos con éxito
+                renderProducts(); // Dibujamos las tarjetas inmediatamente
+                resolve();
             } catch (error) {
                 reject(error);
             } finally {
-                // Limpiamos la etiqueta script y la función
                 document.body.removeChild(script);
                 delete window[callbackName];
             }
         };
 
-        // Creamos la etiqueta <script> apuntando a Google con el callback
         const script = document.createElement('script');
         script.src = `${GOOGLE_SHEETS_API}?callback=${callbackName}`;
-        script.onerror = () => {
-            reject(new Error('Error cargando el script de Google'));
-        };
-        
+        script.onerror = () => reject(new Error('Error cargando Google Sheets'));
         document.body.appendChild(script);
     }).catch(error => {
         console.error('Error cargando productos:', error);
-        document.getElementById('products-grid').innerHTML = `<p style="text-align:center; color:#ff4444;">Error al cargar productos de la nube.</p>`;
+        const grid = document.getElementById('products-grid');
+        if (grid) grid.innerHTML = `<p style="text-align:center; color:#ff4444;">Error al cargar productos.</p>`;
     });
 }
 
@@ -77,6 +68,7 @@ function renderProducts() {
 
 function addToCart(id) {
     const product = productos.find(p => p.id === id);
+    if (!product) return;
     cart.push(product);
     saveCart();
     updateCartUI();
@@ -138,29 +130,29 @@ if (cartBtn) {
 }
 
 // ==========================================
-// 3. SISTEMA DE ANIMACIONES AL SCROLL
+// 3. SISTEMA DE ANIMACIONES (Solo textos)
 // ==========================================
 const observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
 const observer = new IntersectionObserver((entries, obs) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            entry.target.classList.add('active', 'show');
+            entry.target.classList.add('active');
             obs.unobserve(entry.target); 
         }
     });
 }, observerOptions);
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Cargamos los productos de Google Sheets al iniciar
     cargarProductosDesdeDB();
     updateCartUI();
 
+    // Solo animamos los textos (reveal-up, etc), NO las tarjetas
     const revealElements = document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right');
     revealElements.forEach(el => observer.observe(el));
 });
 
 // ==========================================
-// 4. LÓGICA DEL MAPA DE ENVÍOS (LEAFLET)
+// 4. LÓGICA DEL MAPA (LEAFLET)
 // ==========================================
 let map;
 let marker;
@@ -212,7 +204,7 @@ function calcularDistancia(origen, destino) {
 
     if (distanciaKm > distanciaMaxima) {
         costoEnvio = 0;
-        mensajeExtra = " (A convenir por WhatsApp - Zona lejana)";
+        mensajeExtra = " (A convenir)";
         document.getElementById('shipping-cost').style.color = "#ff4444"; 
     } else {
         document.getElementById('shipping-cost').style.color = "var(--gold-primary)"; 
@@ -229,7 +221,7 @@ function calcularDistancia(origen, destino) {
 }
 
 // ==========================================
-// 5. LÓGICA DEL CHECKOUT Y WHATSAPP
+// 5. CHECKOUT Y WHATSAPP
 // ==========================================
 const checkoutModal = document.getElementById('checkout-modal');
 const closeCheckout = document.getElementById('close-checkout');
@@ -262,9 +254,6 @@ function copiarTexto(texto) {
     });
 }
 
-// ==========================================
-// 6. LÓGICA DE SUBIDA DE COMPROBANTE Y FINALIZAR
-// ==========================================
 const fileInput = document.getElementById('comprobante');
 const previewContainer = document.getElementById('preview-container');
 const imagePreview = document.getElementById('image-preview');
@@ -296,15 +285,12 @@ async function subirComprobante(file) {
         body: formData
     });
 
-    if (!response.ok) {
-        throw new Error('Servicio ocupado, intenta de nuevo.');
-    }
-
+    if (!response.ok) throw new Error('Servicio ocupado');
     const result = await response.json();
     if (result.data && result.data.output && result.data.output.url) {
         return result.data.output.url;
     } else {
-        throw new Error('No se pudo obtener la URL de la imagen.');
+        throw new Error('No se pudo obtener la URL');
     }
 }
 
@@ -322,12 +308,11 @@ async function finalizarCompra() {
         return;
     }
 
-    btn.innerHTML = 'Subiendo comprobante... <i class="fa-solid fa-spinner fa-spin"></i>';
+    btn.innerHTML = 'Subiendo... <i class="fa-solid fa-spinner fa-spin"></i>';
     btn.disabled = true;
 
     try {
         const urlComprobante = await subirComprobante(fileInput.files[0]);
-
         const subtotal = cart.reduce((acc, item) => acc + item.precio, 0);
         const total = subtotal + shippingCost;
         const numeroWhatsApp = "593962576433"; 
@@ -353,7 +338,6 @@ async function finalizarCompra() {
 
         window.open(urlWhatsApp, '_blank');
 
-        // Limpiar
         cart = [];
         saveCart();
         updateCartUI();
@@ -366,7 +350,7 @@ async function finalizarCompra() {
         
     } catch (error) {
         console.error(error);
-        alert(`Hubo un error al subir el comprobante: ${error.message}`);
+        alert(`Error al subir: ${error.message}`);
     } finally {
         btn.innerHTML = 'Finalizar y Enviar por WhatsApp <i class="fa-brands fa-whatsapp"></i>';
         btn.disabled = false;
