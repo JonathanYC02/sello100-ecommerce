@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | SELLO 100</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 100px auto 50px;
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 16px;
+        }
+        .admin-title {
+            font-family: var(--font-title);
+            color: var(--gold-primary);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        @media (max-width: 768px) {
+            .admin-grid { grid-template-columns: 1fr; }
+        }
+        .admin-form-group { margin-bottom: 1rem; }
+        .admin-form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-muted); }
+        .admin-input {
+            width: 100%;
+            padding: 0.8rem;
+            background: #111;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 8px;
+            font-family: var(--font-body);
+        }
+        .admin-input:focus { outline: none; border-color: var(--gold-primary); }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .admin-table th, .admin-table td { padding: 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .admin-table th { color: var(--gold-primary); font-family: var(--font-title); }
+        .admin-img-preview { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+        .login-box { max-width: 400px; margin: 150px auto; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+
+    <!-- LOGIN -->
+    <div id="login-section" class="admin-container login-box">
+        <h2 class="admin-title">Acceso Administrador</h2>
+        <div class="admin-form-group">
+            <input type="password" id="admin-pass" class="admin-input" placeholder="Ingresa la contraseña">
+        </div>
+        <button class="btn-gold btn-full" onclick="login()">Entrar al Panel</button>
+        <p id="login-error" style="color: #ff4444; margin-top: 1rem; display: none;">Contraseña incorrecta</p>
+    </div>
+
+    <!-- PANEL -->
+    <div id="admin-panel" class="admin-container" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 class="admin-title" style="margin: 0;">Panel de Control</h2>
+            <button onclick="logout()" class="btn-gold" style="background: transparent; border: 1px solid var(--gold-primary); color: var(--gold-primary); padding: 0.5rem 1rem;">Cerrar Sesión</button>
+        </div>
+
+        <div class="admin-grid">
+            <!-- FORMULARIO NUEVO PRODUCTO -->
+            <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px;">
+                <h3 style="color: white; margin-bottom: 1rem;">Añadir Nuevo Producto</h3>
+                
+                <div class="admin-form-group">
+                    <label>Nombre del Producto</label>
+                    <input type="text" id="prod-nombre" class="admin-input">
+                </div>
+                <div class="admin-form-group">
+                    <label>Precio ($)</label>
+                    <input type="number" id="prod-precio" class="admin-input" step="0.01">
+                </div>
+                <div class="admin-form-group">
+                    <label>Imagen del Producto</label>
+                    <input type="file" id="prod-imagen-file" accept="image/*" class="admin-input" style="padding: 0.5rem;">
+                    <small style="color: #888; font-size: 0.8rem; display: block; margin-top: 5px;">Sube una foto desde tu PC (JPG/PNG).</small>
+                </div>
+                <div class="admin-form-group">
+                    <label>Tallas (separadas por coma)</label>
+                    <input type="text" id="prod-tallas" class="admin-input" placeholder="S, M, L, XL">
+                </div>
+                
+                <button class="btn-gold btn-full" style="margin-top: 1rem;" onclick="agregarProducto()" id="btn-guardar">Guardar Producto</button>
+            </div>
+
+            <!-- TABLA DE PRODUCTOS -->
+            <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; overflow-x: auto;">
+                <h3 style="color: white; margin-bottom: 1rem;">Productos en Tienda</h3>
+                <table class="admin-table" id="tabla-productos">
+                    <thead>
+                        <tr>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-productos">
+                        <!-- Se inyectan los productos -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ AQUÍ VA LA URL DE TU GOOGLE SHEETS (La misma de app-v4.js)
+        const GOOGLE_SHEETS_API = 'https://script.google.com/macros/s/AKfycbyAyFb8r7kqhfY8aLRfhk5vudQHRNrQAxhzgB7TynjUtLZcdcGPSzuBg82aTd-a799F/exec';
+        
+        // ⚠️ PEGA AQUÍ TU API KEY DE IMGBB (Sin las comillas, solo el código)
+        const IMGBB_API_KEY = 'd885018b58fe9232ff84c3cf4ba9ee76'; 
+
+        // Contraseña del admin
+        const ADMIN_PASSWORD = 'sello100admin';
+
+        if (localStorage.getItem('sello100_admin_logged') === 'true') {
+            mostrarPanel();
+        }
+
+        function login() {
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === ADMIN_PASSWORD) {
+                localStorage.setItem('sello100_admin_logged', 'true');
+                mostrarPanel();
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('sello100_admin_logged');
+            location.reload();
+        }
+
+        function mostrarPanel() {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+            cargarProductos();
+        }
+
+        // Cargar productos desde Google Sheets (JSONP)
+        function cargarProductos() {
+            const callbackName = 'adminCallback_' + Date.now();
+            
+            window[callbackName] = (data) => {
+                const tbody = document.getElementById('tbody-productos');
+                tbody.innerHTML = '';
+                data.forEach(prod => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><img src="${prod.imagen}" class="admin-img-preview" alt="img"></td>
+                            <td>${prod.nombre}</td>
+                            <td style="color: var(--gold-primary);">$${Number(prod.precio).toFixed(2)}</td>
+                            <td>
+                                <button onclick="eliminarProducto(${prod.id})" style="background: none; border: none; color: #ff4444; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                document.body.removeChild(script);
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${GOOGLE_SHEETS_API}?callback=${callbackName}`;
+            document.body.appendChild(script);
+        }
+
+        // Agregar producto (Sube foto a ImgBB y guarda en Google Sheets)
+        async function agregarProducto() {
+            const nombre = document.getElementById('prod-nombre').value;
+            const precio = parseFloat(document.getElementById('prod-precio').value);
+            const imagenFile = document.getElementById('prod-imagen-file').files[0];
+            const tallasStr = document.getElementById('prod-tallas').value;
+            const btnGuardar = document.getElementById('btn-guardar');
+
+            if (!nombre || !precio || !imagenFile) {
+                alert("Completa nombre, precio y selecciona una imagen.");
+                return;
+            }
+
+            if (IMGBB_API_KEY === 'TU_API_KEY_AQUI') {
+                alert("Por favor, configura tu API Key de ImgBB en el código.");
+                return;
+            }
+
+            btnGuardar.innerHTML = 'Subiendo... <i class="fa-solid fa-spinner fa-spin"></i>';
+            btnGuardar.disabled = true;
+
+            try {
+                // 1. Subir imagen a ImgBB
+                const formData = new FormData();
+                formData.append('image', imagenFile);
+
+                const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const resJson = await resp.json();
+                
+                if (!resJson.success) {
+                    throw new Error('ImgBB falló: ' + (resJson.error ? resJson.error.message : 'Error desconocido'));
+                }
+                
+                const urlImagen = resJson.data.url;
+
+                // 2. Enviar datos a Google Sheets (Formulario oculto para evitar CORS)
+                const dataToSend = {
+                    nombre: nombre,
+                    precio: precio,
+                    imagen: urlImagen,
+                    tallas: tallasStr,
+                    tela: "Personalizada"
+                };
+
+                // Creamos un iframe oculto para el envío
+                if (!document.getElementById('hidden_iframe')) {
+                    const iframe = document.createElement('iframe');
+                    iframe.name = 'hidden_iframe';
+                    iframe.id = 'hidden_iframe';
+                    iframe.style.display = 'none';
+                    document.body.appendChild(iframe);
+                }
+
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = GOOGLE_SHEETS_API;
+                form.target = 'hidden_iframe';
+                
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'data';
+                input.value = JSON.stringify(dataToSend);
+                form.appendChild(input);
+                
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+
+                alert("Producto enviado. La hoja puede tardar unos segundos en actualizarse.");
+                
+                // Limpiamos el formulario
+                document.getElementById('prod-nombre').value = '';
+                document.getElementById('prod-precio').value = '';
+                document.getElementById('prod-imagen-file').value = '';
+                document.getElementById('prod-tallas').value = '';
+                
+                // Recargamos la tabla después de 3 segundos
+                setTimeout(cargarProductos, 3000);
+
+            } catch (error) {
+                console.error(error);
+                alert("Error al subir: " + error.message);
+            } finally {
+                btnGuardar.innerHTML = 'Guardar Producto';
+                btnGuardar.disabled = false;
+            }
+        }
+
+        // Eliminar producto (Solo aviso, se hace desde Google Sheets)
+        function eliminarProducto(id) {
+            alert("Para eliminar un producto, por favor bórralo directamente desde tu hoja de Google Sheets. Es más seguro.");
+        }
+    </script>
+</body>
+</html>

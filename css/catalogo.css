@@ -1,0 +1,102 @@
+/* =========================================
+   ESTILOS DEL CATÁLOGO Y TARJETAS DE PRODUCTO
+   ========================================= */
+
+/* 1. Cuadrícula de productos */
+#products-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    gap: 2rem !important;
+    width: 100%;
+    padding: 1rem 0;
+}
+
+/* 2. Tarjeta individual */
+.product-card {
+    background: var(--bg-card) !important;
+    border: 1px solid rgba(212, 175, 55, 0.2) !important;
+    border-radius: 12px !important;
+    padding: 1.5rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    
+    /* Estado inicial para la animación de scroll */
+    opacity: 0; 
+    transform: translateY(30px);
+}
+
+/* Clase que activa el JavaScript cuando la tarjeta entra en pantalla */
+.product-card.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 3. Contenedor de la imagen */
+.product-img-container {
+    width: 100% !important;
+    height: 300px !important; /* Altura fija para uniformidad */
+    overflow: hidden !important;
+    border-radius: 8px !important;
+    margin-bottom: 1.2rem !important;
+    background-color: #111 !important; /* Fondo oscuro por si la imagen tarda en cargar */
+}
+
+/* 4. La imagen en sí */
+.product-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; /* Recorta la imagen para que llene el espacio sin deformarse */
+    display: block !important;
+    transition: transform 0.4s ease !important;
+}
+
+/* 5. Textos de la tarjeta */
+.product-title {
+    font-family: var(--font-title);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #fff;
+}
+
+.product-price {
+    color: var(--gold-primary);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    margin-top: auto !important; /* Empuja el precio hacia abajo si el título es corto */
+}
+
+/* 6. Botón de añadir al carrito */
+.btn-add-cart {
+    background: transparent;
+    border: 1px solid var(--gold-primary);
+    color: var(--gold-primary);
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: var(--font-title);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.btn-add-cart:hover {
+    background: var(--gold-primary);
+    color: var(--bg-color);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+}
+
+/* 7. Efectos Hover (Al pasar el mouse) */
+.product-card:hover {
+    transform: translateY(-5px) !important;
+    border-color: var(--gold-primary) !important;
+    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.15) !important;
+}
+
+.product-card:hover .product-img {
+    transform: scale(1.05) !important;
+}
