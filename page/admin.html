@@ -8,44 +8,35 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/main.css">
     <style>
-        /* Estilos específicos del Admin */
         .admin-container { max-width: 1200px; margin: 80px auto 50px; padding: 2rem; background: var(--bg-card); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 16px; position: relative; }
         .admin-title { font-family: var(--font-title); color: var(--gold-primary); text-align: center; margin-bottom: 0.5rem; }
         .admin-subtitle { text-align: center; color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
-        
         .admin-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem; }
         @media (max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } }
-        
         .admin-form-group { margin-bottom: 1.2rem; }
         .admin-form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem; font-weight: 600; }
         .admin-form-group small { color: #888; display: block; margin-bottom: 5px; font-size: 0.8rem; }
         .admin-input { width: 100%; padding: 0.8rem; background: #111; border: 1px solid #333; color: white; border-radius: 8px; font-family: var(--font-body); transition: 0.3s; }
         .admin-input:focus { outline: none; border-color: var(--gold-primary); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
-        
         .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; }
         .checkbox-item { position: relative; }
         .checkbox-item input[type="checkbox"] { display: none; }
         .checkbox-item label { display: inline-block; padding: 8px 15px; background: #111; border: 1px solid #444; border-radius: 6px; cursor: pointer; transition: all 0.3s; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0; }
         .checkbox-item input[type="checkbox"]:checked + label { background: rgba(212, 175, 55, 0.2); border-color: var(--gold-primary); color: var(--gold-primary); font-weight: bold; }
-
         .table-container { background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; overflow-x: auto; }
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         .admin-table th, .admin-table td { padding: 0.8rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
         .admin-table th { color: var(--gold-primary); font-family: var(--font-title); font-size: 0.8rem; text-transform: uppercase; }
         .admin-img-preview { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #333; }
-        
         .btn-accion { background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 6px; width: 35px; height: 35px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; margin: 0 2px; }
         .btn-editar { color: var(--gold-primary); }
         .btn-editar:hover { background: var(--gold-primary); color: #000; border-color: var(--gold-primary); }
         .btn-eliminar { color: #ff4444; }
         .btn-eliminar:hover { background: #ff4444; color: #fff; border-color: #ff4444; }
-        
         .btn-volver { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: 0.3s; margin-bottom: 1rem; }
         .btn-volver:hover { color: var(--gold-primary); }
-
         .login-box { max-width: 400px; margin: 100px auto; text-align: center; background: var(--bg-card); border: 1px solid rgba(212, 175, 55, 0.2); padding: 3rem 2rem; border-radius: 16px; }
         .login-icon { font-size: 3rem; color: var(--gold-primary); margin-bottom: 1rem; }
-        
         .loader { display: none; text-align: center; padding: 2rem; color: var(--gold-primary); }
         .loader i { font-size: 2rem; margin-bottom: 1rem; animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -77,12 +68,8 @@
     <!-- PANEL DE ADMIN -->
     <div id="admin-panel" class="admin-container" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #333; padding-bottom: 1rem;">
-            <a href="../index.html" class="btn-volver">
-                <i class="fa-solid fa-store"></i> Ver Tienda
-            </a>
-            <button onclick="logout()" style="background: none; border: none; color: #ff4444; cursor: pointer; font-size: 0.9rem;">
-                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
-            </button>
+            <a href="../index.html" class="btn-volver"><i class="fa-solid fa-store"></i> Ver Tienda</a>
+            <button onclick="logout()" style="background: none; border: none; color: #ff4444; cursor: pointer; font-size: 0.9rem;"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</button>
         </div>
 
         <h2 class="admin-title">Gestión de Catálogo</h2>
@@ -106,13 +93,13 @@
                 </div>
                 <div class="admin-form-group">
                     <label>Imagen de la Prenda</label>
-                    <small>Sube una foto clara desde tu PC o galería (JPG, PNG).</small>
+                    <small>Sube una foto clara (se comprime automáticamente).</small>
                     <input type="file" id="prod-imagen-file" accept="image/*" class="admin-input" style="padding: 0.5rem;">
                     <input type="hidden" id="prod-imagen-url">
                 </div>
                 
                 <div class="admin-form-group">
-                    <label>Tallas Disponibles (Marca las que tengas)</label>
+                    <label>Tallas Disponibles</label>
                     <div class="checkbox-group" id="group-tallas">
                         <div class="checkbox-item"><input type="checkbox" id="talla-S" value="S"><label for="talla-S">S</label></div>
                         <div class="checkbox-item"><input type="checkbox" id="talla-M" value="M"><label for="talla-M">M</label></div>
@@ -123,7 +110,7 @@
                 </div>
 
                 <div class="admin-form-group">
-                    <label>Colores Disponibles (Marca los que tengas)</label>
+                    <label>Colores Disponibles</label>
                     <div class="checkbox-group" id="group-colores">
                         <div class="checkbox-item"><input type="checkbox" id="color-negro" value="Negro"><label for="color-negro">Negro</label></div>
                         <div class="checkbox-item"><input type="checkbox" id="color-blanco" value="Blanco"><label for="color-blanco">Blanco</label></div>
@@ -159,17 +146,16 @@
     </div>
 
     <script>
-        // ⚠️ CONFIGURACIÓN
+        // ⚠️ CONFIGURACIÓN (Reemplaza con tu API KEY de ImgBB)
         const GOOGLE_SHEETS_API = 'https://script.google.com/macros/s/AKfycbyAyFb8r7kqhfY8aLRfhk5vudQHRNrQAxhzgB7TynjUtLZcdcGPSzuBg82aTd-a799F/exec';
-        const IMGBB_API_KEY = 'd885018b58fe9232ff84c3cf4ba9ee76'; // ⚠️ PEGA TU API KEY DE IMGBB AQUÍ
+        const IMGBB_API_KEY = 'TU_API_KEY_AQUI'; 
         const ADMIN_PASSWORD = 'sello100admin';
 
-                // --- FUNCIONES DE SESIÓN CON COOKIES (Solo en el dispositivo que inicia) ---
+        // --- SISTEMA DE SESIÓN CON COOKIES ---
         function setSessionCookie() {
             const d = new Date();
-            d.setTime(d.getTime() + (30 * 24 * 60 * 60 * 1000)); // Expira en 30 días
-            const expires = "expires=" + d.toUTCString();
-            document.cookie = "sello100_admin=" + ADMIN_PASSWORD + ";" + expires + ";path=/";
+            d.setTime(d.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 días
+            document.cookie = "sello100_admin=" + ADMIN_PASSWORD + ";expires=" + d.toUTCString() + ";path=/";
         }
 
         function getSessionCookie() {
@@ -185,17 +171,19 @@
         }
 
         function deleteSessionCookie() {
-            document.cookie = "sello100_admin=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "sello100_admin=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;";
         }
 
-        // Verificación al cargar
-        if (getSessionCookie() === ADMIN_PASSWORD) {
-            mostrarPanel();
-        }
+        // Verificación al cargar la página
+        window.onload = function() {
+            if (getSessionCookie() === ADMIN_PASSWORD) {
+                mostrarPanel();
+            }
+        };
 
         function login() {
             if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) {
-                setSessionCookie(); // Guarda la cookie solo en este dispositivo
+                setSessionCookie();
                 mostrarPanel();
             } else {
                 document.getElementById('login-error').style.display = 'block';
@@ -203,7 +191,7 @@
         }
 
         function logout() {
-            deleteSessionCookie(); // Borra la cookie de este dispositivo
+            deleteSessionCookie();
             location.reload();
         }
 
@@ -213,6 +201,7 @@
             cargarProductos();
         }
 
+        // --- LÓGICA DE CARGA DE PRODUCTOS ---
         function cargarProductos() {
             document.getElementById('loader').style.display = 'block';
             const callbackName = 'adminCallback_' + Date.now();
@@ -294,6 +283,7 @@
             document.getElementById('btn-cancelar').style.display = 'none';
         }
 
+        // --- GUARDAR CON COMPRESIÓN ---
         async function guardarProducto() {
             const id = document.getElementById('prod-id').value;
             const nombre = document.getElementById('prod-nombre').value.trim();
@@ -317,7 +307,7 @@
                 let urlImagen = imagenUrlActual;
 
                 if (imagenFile) {
-                    btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Subiendo imagen...';
+                    btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Subiendo...';
                     const imagenComprimida = await comprimirImagen(imagenFile, 800, 0.7);
                     const formData = new FormData();
                     formData.append('image', imagenComprimida);
@@ -386,8 +376,9 @@
             });
         }
 
+        // --- ELIMINAR ---
         function eliminarProducto(id) {
-            if (confirm("⚠️ ¿Estás seguro que deseas eliminar este producto de la tienda?\n\nEsta acción no se puede deshacer.")) {
+            if (confirm("⚠️ ¿Seguro que deseas eliminar este producto?\n\nEsta acción no se puede deshacer.")) {
                 const dataToSend = { action: "delete", id: id };
                 if (!document.getElementById('hidden_iframe')) {
                     const iframe = document.createElement('iframe');
@@ -399,7 +390,7 @@
                 const input = document.createElement('input');
                 input.type = 'hidden'; input.name = 'data'; input.value = JSON.stringify(dataToSend);
                 form.appendChild(input); document.body.appendChild(form); form.submit(); document.body.removeChild(form);
-                alert("Producto eliminado. Actualizando tabla...");
+                alert("Producto eliminado. Actualizando...");
                 setTimeout(cargarProductos, 2000);
             }
         }
