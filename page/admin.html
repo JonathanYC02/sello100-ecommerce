@@ -8,77 +8,135 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/main.css">
     <style>
-        .admin-container { max-width: 1200px; margin: 100px auto 50px; padding: 2rem; background: var(--bg-card); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 16px; }
-        .admin-title { font-family: var(--font-title); color: var(--gold-primary); text-align: center; margin-bottom: 2rem; }
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        /* Estilos específicos del Admin */
+        .admin-container { max-width: 1200px; margin: 80px auto 50px; padding: 2rem; background: var(--bg-card); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 16px; position: relative; }
+        .admin-title { font-family: var(--font-title); color: var(--gold-primary); text-align: center; margin-bottom: 0.5rem; }
+        .admin-subtitle { text-align: center; color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
+        
+        /* Grid */
+        .admin-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem; }
         @media (max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } }
+        
+        /* Formulario */
         .admin-form-group { margin-bottom: 1rem; }
-        .admin-form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-muted); }
-        .admin-input { width: 100%; padding: 0.8rem; background: #111; border: 1px solid #333; color: white; border-radius: 8px; font-family: var(--font-body); }
-        .admin-input:focus { outline: none; border-color: var(--gold-primary); }
+        .admin-form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem; font-weight: 600; }
+        .admin-form-group small { color: #888; display: block; margin-bottom: 5px; font-size: 0.8rem; }
+        .admin-input { width: 100%; padding: 0.8rem; background: #111; border: 1px solid #333; color: white; border-radius: 8px; font-family: var(--font-body); transition: 0.3s; }
+        .admin-input:focus { outline: none; border-color: var(--gold-primary); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+        
+        /* Tabla */
+        .table-container { background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; overflow-x: auto; }
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        .admin-table th, .admin-table td { padding: 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .admin-table th { color: var(--gold-primary); font-family: var(--font-title); }
-        .admin-img-preview { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
-        .login-box { max-width: 400px; margin: 150px auto; text-align: center; }
-        .btn-accion { background: none; border: none; cursor: pointer; font-size: 1.1rem; margin: 0 5px; transition: 0.3s; }
+        .admin-table th, .admin-table td { padding: 0.8rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        .admin-table th { color: var(--gold-primary); font-family: var(--font-title); font-size: 0.8rem; text-transform: uppercase; }
+        .admin-img-preview { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #333; }
+        
+        /* Botones de acción */
+        .btn-accion { background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 6px; width: 35px; height: 35px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; margin: 0 2px; }
         .btn-editar { color: var(--gold-primary); }
-        .btn-editar:hover { color: #fff; }
+        .btn-editar:hover { background: var(--gold-primary); color: #000; border-color: var(--gold-primary); }
         .btn-eliminar { color: #ff4444; }
-        .btn-eliminar:hover { color: #ff8888; }
+        .btn-eliminar:hover { background: #ff4444; color: #fff; border-color: #ff4444; }
+        
+        /* Botón Volver */
+        .btn-volver { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: 0.3s; margin-bottom: 1rem; }
+        .btn-volver:hover { color: var(--gold-primary); }
+
+        /* Login */
+        .login-box { max-width: 400px; margin: 100px auto; text-align: center; background: var(--bg-card); border: 1px solid rgba(212, 175, 55, 0.2); padding: 3rem 2rem; border-radius: 16px; }
+        .login-icon { font-size: 3rem; color: var(--gold-primary); margin-bottom: 1rem; }
+        
+        /* Loader */
+        .loader { display: none; text-align: center; padding: 2rem; color: var(--gold-primary); }
+        .loader i { font-size: 2rem; margin-bottom: 1rem; animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <div class="bg-grid"></div>
+    <div class="glow-orb orb-gold"></div>
 
     <!-- LOGIN -->
-    <div id="login-section" class="admin-container login-box">
-        <h2 class="admin-title">Acceso Administrador</h2>
-        <div class="admin-form-group">
-            <input type="password" id="admin-pass" class="admin-input" placeholder="Ingresa la contraseña">
+    <div id="login-section" class="login-box">
+        <div class="login-icon"><i class="fa-solid fa-user-gear"></i></div>
+        <h2 class="admin-title">SELLO 100</h2>
+        <p class="admin-subtitle">Panel de Administración</p>
+        
+        <div class="admin-form-group" style="text-align: left;">
+            <input type="password" id="admin-pass" class="admin-input" placeholder="Contraseña de acceso" style="text-align: center;">
         </div>
-        <button class="btn-gold btn-full" onclick="login()">Entrar al Panel</button>
-        <p id="login-error" style="color: #ff4444; margin-top: 1rem; display: none;">Contraseña incorrecta</p>
+        <button class="btn-gold btn-full" onclick="login()">Ingresar al Panel</button>
+        <p id="login-error" style="color: #ff4444; margin-top: 1rem; display: none; font-size: 0.9rem;">Contraseña incorrecta. Intenta de nuevo.</p>
+        
+        <div style="margin-top: 2rem; border-top: 1px solid #333; padding-top: 1rem;">
+            <a href="../index.html" class="btn-volver" style="justify-content: center; width: 100%;">
+                <i class="fa-solid fa-arrow-left"></i> Volver a la Tienda
+            </a>
+        </div>
     </div>
 
-    <!-- PANEL -->
+    <!-- PANEL DE ADMIN -->
     <div id="admin-panel" class="admin-container" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h2 class="admin-title" style="margin: 0;">Panel de Control</h2>
-            <button onclick="logout()" class="btn-gold" style="background: transparent; border: 1px solid var(--gold-primary); color: var(--gold-primary); padding: 0.5rem 1rem;">Cerrar Sesión</button>
+        <!-- Barra superior -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #333; padding-bottom: 1rem;">
+            <a href="../index.html" class="btn-volver">
+                <i class="fa-solid fa-store"></i> Ver Tienda
+            </a>
+            <button onclick="logout()" style="background: none; border: none; color: #ff4444; cursor: pointer; font-size: 0.9rem;">
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </button>
         </div>
+
+        <h2 class="admin-title">Gestión de Catálogo</h2>
+        <p class="admin-subtitle">Hola Derian, desde aquí puedes añadir, editar o eliminar tus productos.</p>
 
         <div class="admin-grid">
             <!-- FORMULARIO -->
-            <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px;">
-                <h3 style="color: white; margin-bottom: 1rem;" id="form-title">Añadir Nuevo Producto</h3>
+            <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; border: 1px solid #222;">
+                <h3 style="color: white; margin-bottom: 1rem; font-family: var(--font-title); font-size: 1.1rem;" id="form-title">
+                    <i class="fa-solid fa-plus-circle" style="color: var(--gold-primary);"></i> Añadir Nuevo Producto
+                </h3>
                 <input type="hidden" id="prod-id">
                 
                 <div class="admin-form-group">
-                    <label>Nombre del Producto</label>
-                    <input type="text" id="prod-nombre" class="admin-input">
+                    <label>Nombre de la Camiseta / Prenda</label>
+                    <input type="text" id="prod-nombre" class="admin-input" placeholder="Ej: Camiseta Oversize 'Fe'">
                 </div>
                 <div class="admin-form-group">
-                    <label>Precio ($)</label>
-                    <input type="number" id="prod-precio" class="admin-input" step="0.01">
+                    <label>Precio en Dólares ($)</label>
+                    <input type="number" id="prod-precio" class="admin-input" step="0.01" placeholder="Ej: 25.00">
                 </div>
                 <div class="admin-form-group">
-                    <label>Imagen del Producto (Deja vacío para mantener la actual)</label>
+                    <label>Imagen de la Prenda</label>
+                    <small>Sube una foto clara desde tu PC o galería (JPG, PNG).</small>
                     <input type="file" id="prod-imagen-file" accept="image/*" class="admin-input" style="padding: 0.5rem;">
                     <input type="hidden" id="prod-imagen-url">
                 </div>
                 <div class="admin-form-group">
-                    <label>Tallas (separadas por coma)</label>
+                    <label>Tallas Disponibles</label>
+                    <small>Separa las tallas con una coma (Ej: S, M, L, XL).</small>
                     <input type="text" id="prod-tallas" class="admin-input" placeholder="S, M, L, XL">
                 </div>
                 
-                <button class="btn-gold btn-full" style="margin-top: 1rem;" onclick="guardarProducto()" id="btn-guardar">Guardar Producto</button>
-                <button class="btn-gold btn-full" style="margin-top: 0.5rem; background: transparent; color: #888; border: 1px solid #444;" onclick="cancelarEdicion()" id="btn-cancelar" style="display: none;">Cancelar Edición</button>
+                <button class="btn-gold btn-full" style="margin-top: 1rem; background: var(--gold-primary); color: #000;" onclick="guardarProducto()" id="btn-guardar">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar Producto
+                </button>
+                <button class="btn-gold btn-full" style="margin-top: 0.5rem; background: transparent; color: #888; border: 1px solid #444; display: none;" onclick="cancelarEdicion()" id="btn-cancelar">
+                    Cancelar Edición
+                </button>
             </div>
 
-            <!-- TABLA -->
-            <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; overflow-x: auto;">
-                <h3 style="color: white; margin-bottom: 1rem;">Productos en Tienda</h3>
+            <!-- TABLA DE PRODUCTOS -->
+            <div class="table-container">
+                <h3 style="color: white; margin-bottom: 1rem; font-family: var(--font-title); font-size: 1.1rem;">
+                    <i class="fa-solid fa-list" style="color: var(--gold-primary);"></i> Productos en Tienda
+                </h3>
+                
+                <div id="loader" class="loader">
+                    <i class="fa-solid fa-spinner"></i>
+                    <p>Cargando productos...</p>
+                </div>
+
                 <table class="admin-table">
                     <thead>
                         <tr>
@@ -95,14 +153,19 @@
     </div>
 
     <script>
+        // ⚠️ CONFIGURACIÓN
         const GOOGLE_SHEETS_API = 'https://script.google.com/macros/s/AKfycbyAyFb8r7kqhfY8aLRfhk5vudQHRNrQAxhzgB7TynjUtLZcdcGPSzuBg82aTd-a799F/exec';
-        const IMGBB_API_KEY = 'TU_API_KEY_AQUI'; // ⚠️ PEGA TU API KEY AQUÍ
+        const IMGBB_API_KEY = 'TU_API_KEY_AQUI'; // ⚠️ PEGA TU API KEY DE IMGBB AQUÍ
         const ADMIN_PASSWORD = 'sello100admin';
 
-        if (localStorage.getItem('sello100_admin_logged') === 'true') mostrarPanel();
+        // Verificar sesión al cargar
+        if (localStorage.getItem('sello100_admin_logged') === 'true') {
+            mostrarPanel();
+        }
 
         function login() {
-            if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) {
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === ADMIN_PASSWORD) {
                 localStorage.setItem('sello100_admin_logged', 'true');
                 mostrarPanel();
             } else {
@@ -121,34 +184,50 @@
             cargarProductos();
         }
 
+        // Cargar productos de Google Sheets (JSONP)
         function cargarProductos() {
+            document.getElementById('loader').style.display = 'block';
             const callbackName = 'adminCallback_' + Date.now();
+            
             window[callbackName] = (data) => {
                 const tbody = document.getElementById('tbody-productos');
                 tbody.innerHTML = '';
-                data.forEach(prod => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><img src="${prod.imagen}" class="admin-img-preview" alt="img"></td>
-                            <td>${prod.nombre}</td>
-                            <td style="color: var(--gold-primary);">$${Number(prod.precio).toFixed(2)}</td>
-                            <td>
-                                <button class="btn-accion btn-editar" onclick='prepararEdicion(${JSON.stringify(prod)})' title="Editar"><i class="fa-solid fa-pen"></i></button>
-                                <button class="btn-accion btn-eliminar" onclick="eliminarProducto(${prod.id})" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                });
+                
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#888;">No hay productos aún.</td></tr>';
+                } else {
+                    data.forEach(prod => {
+                        tbody.innerHTML += `
+                            <tr id="fila-${prod.id}">
+                                <td><img src="${prod.imagen}" class="admin-img-preview" alt="img" onerror="this.src='https://via.placeholder.com/50'"></td>
+                                <td>${prod.nombre}</td>
+                                <td style="color: var(--gold-primary); font-weight: bold;">$${Number(prod.precio).toFixed(2)}</td>
+                                <td>
+                                    <button class="btn-accion btn-editar" onclick='prepararEdicion(${JSON.stringify(prod)})' title="Editar Producto"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn-accion btn-eliminar" onclick="eliminarProducto(${prod.id})" title="Eliminar Producto"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+                
+                document.getElementById('loader').style.display = 'none';
                 document.body.removeChild(script);
                 delete window[callbackName];
             };
+
             const script = document.createElement('script');
             script.src = `${GOOGLE_SHEETS_API}?callback=${callbackName}`;
+            script.onerror = () => {
+                document.getElementById('loader').style.display = 'none';
+                alert("Error de conexión con Google Sheets.");
+            };
             document.body.appendChild(script);
         }
 
+        // Preparar formulario para Editar
         function prepararEdicion(prod) {
-            document.getElementById('form-title').innerText = "Editar Producto";
+            document.getElementById('form-title').innerHTML = '<i class="fa-solid fa-pen-to-square" style="color: var(--gold-primary);"></i> Editando Producto';
             document.getElementById('prod-id').value = prod.id;
             document.getElementById('prod-nombre').value = prod.nombre;
             document.getElementById('prod-precio').value = prod.precio;
@@ -156,12 +235,15 @@
             document.getElementById('prod-imagen-url').value = prod.imagen;
             document.getElementById('prod-imagen-file').value = '';
             
-            document.getElementById('btn-guardar').innerText = "Actualizar Producto";
+            document.getElementById('btn-guardar').innerHTML = '<i class="fa-solid fa-check"></i> Actualizar Producto';
             document.getElementById('btn-cancelar').style.display = 'block';
+            
+            // Scroll suave hacia el formulario
+            document.getElementById('form-title').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         function cancelarEdicion() {
-            document.getElementById('form-title').innerText = "Añadir Nuevo Producto";
+            document.getElementById('form-title').innerHTML = '<i class="fa-solid fa-plus-circle" style="color: var(--gold-primary);"></i> Añadir Nuevo Producto';
             document.getElementById('prod-id').value = '';
             document.getElementById('prod-nombre').value = '';
             document.getElementById('prod-precio').value = '';
@@ -169,73 +251,103 @@
             document.getElementById('prod-imagen-url').value = '';
             document.getElementById('prod-imagen-file').value = '';
             
-            document.getElementById('btn-guardar').innerText = "Guardar Producto";
+            document.getElementById('btn-guardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Producto';
             document.getElementById('btn-cancelar').style.display = 'none';
         }
 
+        // Guardar o Actualizar Producto
         async function guardarProducto() {
             const id = document.getElementById('prod-id').value;
-            const nombre = document.getElementById('prod-nombre').value;
+            const nombre = document.getElementById('prod-nombre').value.trim();
             const precio = parseFloat(document.getElementById('prod-precio').value);
-            const tallas = document.getElementById('prod-tallas').value;
+            const tallas = document.getElementById('prod-tallas').value.trim();
             const imagenFile = document.getElementById('prod-imagen-file').files[0];
             const imagenUrlActual = document.getElementById('prod-imagen-url').value;
             const btn = document.getElementById('btn-guardar');
 
             if (!nombre || !precio) {
-                alert("Completa nombre y precio.");
+                alert("Por favor, completa el nombre y el precio.");
                 return;
             }
 
-            btn.innerHTML = 'Procesando... <i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
             btn.disabled = true;
 
             try {
                 let urlImagen = imagenUrlActual;
 
-                // Si hay una nueva imagen, la subimos
+                // Si seleccionó una imagen nueva, la subimos a ImgBB
                 if (imagenFile) {
+                    btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Subiendo imagen...';
                     const formData = new FormData();
                     formData.append('image', imagenFile);
+                    
                     const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
                         method: 'POST', body: formData
                     });
                     const resJson = await resp.json();
-                    if (!resJson.success) throw new Error('Error al subir imagen');
+                    
+                    if (!resJson.success) throw new Error('Error al subir imagen. Verifica tu conexión.');
                     urlImagen = resJson.data.url;
                 }
 
-                if (!urlImagen) throw new Error('Se necesita una imagen');
+                if (!urlImagen) throw new Error('Debes seleccionar una imagen para el producto.');
 
-                const dataToSend = { id: id || null, nombre, precio, imagen: urlImagen, tallas, tela: "Personalizada" };
+                const dataToSend = { 
+                    id: id || null, 
+                    nombre: nombre, 
+                    precio: precio, 
+                    imagen: urlImagen, 
+                    tallas: tallas || "S, M, L", 
+                    tela: "Personalizada" 
+                };
 
-                // Enviamos a Google Sheets
+                // Enviar a Google Sheets
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+                
                 if (!document.getElementById('hidden_iframe')) {
                     const iframe = document.createElement('iframe');
-                    iframe.name = 'hidden_iframe'; iframe.id = 'hidden_iframe'; iframe.style.display = 'none';
+                    iframe.name = 'hidden_iframe'; 
+                    iframe.id = 'hidden_iframe'; 
+                    iframe.style.display = 'none';
                     document.body.appendChild(iframe);
                 }
+                
                 const form = document.createElement('form');
-                form.method = 'POST'; form.action = GOOGLE_SHEETS_API; form.target = 'hidden_iframe';
+                form.method = 'POST'; 
+                form.action = GOOGLE_SHEETS_API; 
+                form.target = 'hidden_iframe';
+                
                 const input = document.createElement('input');
-                input.type = 'hidden'; input.name = 'data'; input.value = JSON.stringify(dataToSend);
-                form.appendChild(input); document.body.appendChild(form); form.submit(); document.body.removeChild(form);
+                input.type = 'hidden'; 
+                input.name = 'data'; 
+                input.value = JSON.stringify(dataToSend);
+                
+                form.appendChild(input); 
+                document.body.appendChild(form); 
+                form.submit(); 
+                document.body.removeChild(form);
 
-                alert("Guardado exitosamente. Recargando tabla...");
+                // Éxito
+                alert(id ? "✅ Producto actualizado correctamente." : "✅ Producto añadido a la tienda.");
                 cancelarEdicion();
+                
+                // Recargar solo la tabla después de 2.5 segundos (dar tiempo a Google)
                 setTimeout(cargarProductos, 2500);
 
             } catch (error) {
                 console.error(error);
-                alert("Error: " + error.message);
+                alert("❌ Error: " + error.message);
             } finally {
-                btn.innerHTML = document.getElementById('prod-id').value ? "Actualizar Producto" : "Guardar Producto";
+                btn.innerHTML = document.getElementById('prod-id').value ? '<i class="fa-solid fa-check"></i> Actualizar Producto' : '<i class="fa-solid fa-floppy-disk"></i> Guardar Producto';
                 btn.disabled = false;
             }
         }
 
         function eliminarProducto(id) {
-            alert("Para eliminar un producto, bórralo directamente desde tu hoja de Google Sheets.");
+            if (confirm("Para eliminar un producto de forma permanente, debes ir a tu hoja de Google Sheets y borrar la fila correspondiente.\n\n¿Entendido?")) {
+                window.open('https://docs.google.com/spreadsheets/', '_blank');
+            }
         }
     </script>
 </body>
