@@ -56,7 +56,7 @@ async function cargarProductosDesdeDB() {
                     id: Number(p.id),
                     nombre: p.nombre,
                     precio: Number(p.precio),
-                    descripcion: p.descripcion || 'Camiseta de algodón premium. Diseño exclusivo de Sello 100. Tela suave, resistente y con un ajuste perfecto.', // Descripción por defecto si no hay
+                    descripcion: p.descripcion || 'Camiseta de algodón premium. Diseño exclusivo de Sello 100. Tela suave, resistente y con un ajuste perfecto.',
                     imagen: p.imagen,
                     tallas: p.tallas ? p.tallas.split(',') : [],
                     color: p.color || 'Negro, Blanco',
@@ -119,7 +119,7 @@ function aplicarFiltros(termino, categoria) {
 }
 
 // ==========================================
-// 6. VISTA RÁPIDA (SIN FILTRO DE COLOR FEO)
+// 6. VISTA RÁPIDA (CON DESCRIPCIÓN Y SIN FILTRO FEO)
 // ==========================================
 function openQuickview(id) {
     const prod = productos.find(p => p.id === id);
@@ -167,7 +167,6 @@ function openQuickview(id) {
             document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             if(color.toLowerCase().includes('blanco')) btn.style.border = '2px solid var(--gold-primary)';
-            // Se eliminó el filtro feo de la imagen
         };
         
         colorsContainer.appendChild(btn);
@@ -295,7 +294,7 @@ const closeCheckout = document.getElementById('close-checkout');
 if (cartBtn) {
     cartBtn.addEventListener('click', () => { 
         cartModal.classList.add('active'); 
-        document.body.classList.add('cart-open'); // <-- Añade esta línea
+        document.body.classList.add('cart-open'); // Ocultar botones flotantes
         updateCartUI(); 
         initMap(); 
     });
@@ -303,13 +302,13 @@ if (cartBtn) {
 if (closeCart) {
     closeCart.addEventListener('click', () => {
         cartModal.classList.remove('active');
-        document.body.classList.remove('cart-open'); // <-- Añade esta línea
+        document.body.classList.remove('cart-open'); // Mostrar botones flotantes
     });
 }
 if (closeCheckout) {
     closeCheckout.addEventListener('click', () => {
         checkoutModal.classList.remove('active');
-        document.body.classList.remove('cart-open'); // <-- Añade esta línea
+        document.body.classList.remove('cart-open');
     });
 }
 
@@ -319,7 +318,7 @@ function abrirCheckout() {
     document.getElementById('total-checkout').innerText = (cart.reduce((a, b) => a + b.precio, 0) + shippingCost).toFixed(2);
     cartModal.classList.remove('active');
     checkoutModal.classList.add('active');
-    document.body.classList.add('cart-open'); // <-- Añade esta línea
+    document.body.classList.add('cart-open'); // Mantener ocultos
 }
 
 const fileInput = document.getElementById('comprobante');
@@ -373,10 +372,9 @@ async function finalizarCompra() {
         window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`, '_blank');
         mostrarToast("Pedido enviado con éxito.", "success");
 
-        document.body.classList.remove('cart-open'); // <-- Añade esta línea
-
         cart = []; saveCart(); updateCartUI();
         checkoutModal.classList.remove('active');
+        document.body.classList.remove('cart-open');
         document.getElementById('nombre-cliente').value = '';
         document.getElementById('cedula-cliente').value = '';
         fileInput.value = '';
