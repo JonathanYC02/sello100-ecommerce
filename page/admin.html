@@ -164,11 +164,38 @@
         const IMGBB_API_KEY = 'd885018b58fe9232ff84c3cf4ba9ee76'; // ⚠️ PEGA TU API KEY DE IMGBB AQUÍ
         const ADMIN_PASSWORD = 'sello100admin';
 
-        if (localStorage.getItem('sello100_admin_logged') === 'true') mostrarPanel();
+                // --- FUNCIONES DE SESIÓN CON COOKIES (Solo en el dispositivo que inicia) ---
+        function setSessionCookie() {
+            const d = new Date();
+            d.setTime(d.getTime() + (30 * 24 * 60 * 60 * 1000)); // Expira en 30 días
+            const expires = "expires=" + d.toUTCString();
+            document.cookie = "sello100_admin=" + ADMIN_PASSWORD + ";" + expires + ";path=/";
+        }
+
+        function getSessionCookie() {
+            const name = "sello100_admin=";
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const ca = decodedCookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') { c = c.substring(1); }
+                if (c.indexOf(name) == 0) { return c.substring(name.length, c.length); }
+            }
+            return "";
+        }
+
+        function deleteSessionCookie() {
+            document.cookie = "sello100_admin=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        }
+
+        // Verificación al cargar
+        if (getSessionCookie() === ADMIN_PASSWORD) {
+            mostrarPanel();
+        }
 
         function login() {
             if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) {
-                localStorage.setItem('sello100_admin_logged', 'true');
+                setSessionCookie(); // Guarda la cookie solo en este dispositivo
                 mostrarPanel();
             } else {
                 document.getElementById('login-error').style.display = 'block';
@@ -176,7 +203,7 @@
         }
 
         function logout() {
-            localStorage.removeItem('sello100_admin_logged');
+            deleteSessionCookie(); // Borra la cookie de este dispositivo
             location.reload();
         }
 
