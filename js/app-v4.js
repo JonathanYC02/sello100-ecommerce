@@ -55,15 +55,16 @@ async function cargarProductosDesdeDB() {
         window[callbackName] = (data) => {
             try {
                 productos = data.map(p => {
-                    // Separar las imágenes por coma
-                    const imagenes = p.imagen ? p.imagen.split(',').map(url => url.trim()).filter(url => url !== '') : [];
+                    // AQUÍ ESTÁ EL TRUCO: Separamos la cadena de texto por comas
+                    const arrayImagenes = p.imagen ? p.imagen.split(',').map(url => url.trim()).filter(url => url !== '') : [];
+                    
                     return {
                         id: Number(p.id),
                         nombre: p.nombre,
                         precio: Number(p.precio),
                         descripcion: p.descripcion || 'Camiseta de algodón premium. Diseño exclusivo de Sello 100.',
-                        imagen: imagenes[0] || '', // La primera imagen es la principal para el index
-                        galeria: imagenes, // Array de todas las imágenes
+                        imagen: arrayImagenes[0] || '', // La primera foto para el index
+                        galeria: arrayImagenes, // El array con TODAS las fotos para el carrusel
                         tallas: p.tallas ? p.tallas.split(',') : [],
                         color: p.color || 'Negro, Blanco',
                         tela: p.tela
@@ -84,7 +85,6 @@ async function cargarProductosDesdeDB() {
         if (grid) grid.innerHTML = `<p style="text-align:center; color:#ff4444; grid-column: 1/-1;">Error al cargar productos.</p>`;
     });
 }
-
 // ==========================================
 // 5. RENDERIZADO Y FILTROS
 // ==========================================
