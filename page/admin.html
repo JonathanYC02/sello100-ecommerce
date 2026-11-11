@@ -13,63 +13,39 @@
         .admin-title { font-family: var(--font-title); color: var(--gold-primary); text-align: center; margin-bottom: 0.5rem; }
         .admin-subtitle { text-align: center; color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
         
-        /* Grid */
         .admin-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem; }
         @media (max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } }
         
-        /* Formulario */
         .admin-form-group { margin-bottom: 1.2rem; }
         .admin-form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem; font-weight: 600; }
         .admin-form-group small { color: #888; display: block; margin-bottom: 5px; font-size: 0.8rem; }
         .admin-input { width: 100%; padding: 0.8rem; background: #111; border: 1px solid #333; color: white; border-radius: 8px; font-family: var(--font-body); transition: 0.3s; }
         .admin-input:focus { outline: none; border-color: var(--gold-primary); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
         
-        /* Checkboxes (Tallas y Colores) */
         .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; }
         .checkbox-item { position: relative; }
         .checkbox-item input[type="checkbox"] { display: none; }
-        .checkbox-item label {
-            display: inline-block;
-            padding: 8px 15px;
-            background: #111;
-            border: 1px solid #444;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 0;
-        }
-        .checkbox-item input[type="checkbox"]:checked + label {
-            background: rgba(212, 175, 55, 0.2);
-            border-color: var(--gold-primary);
-            color: var(--gold-primary);
-            font-weight: bold;
-        }
+        .checkbox-item label { display: inline-block; padding: 8px 15px; background: #111; border: 1px solid #444; border-radius: 6px; cursor: pointer; transition: all 0.3s; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0; }
+        .checkbox-item input[type="checkbox"]:checked + label { background: rgba(212, 175, 55, 0.2); border-color: var(--gold-primary); color: var(--gold-primary); font-weight: bold; }
 
-        /* Tabla */
         .table-container { background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; overflow-x: auto; }
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         .admin-table th, .admin-table td { padding: 0.8rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
         .admin-table th { color: var(--gold-primary); font-family: var(--font-title); font-size: 0.8rem; text-transform: uppercase; }
         .admin-img-preview { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #333; }
         
-        /* Botones de acción */
         .btn-accion { background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 6px; width: 35px; height: 35px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; margin: 0 2px; }
         .btn-editar { color: var(--gold-primary); }
         .btn-editar:hover { background: var(--gold-primary); color: #000; border-color: var(--gold-primary); }
         .btn-eliminar { color: #ff4444; }
         .btn-eliminar:hover { background: #ff4444; color: #fff; border-color: #ff4444; }
         
-        /* Botón Volver */
         .btn-volver { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: 0.3s; margin-bottom: 1rem; }
         .btn-volver:hover { color: var(--gold-primary); }
 
-        /* Login */
         .login-box { max-width: 400px; margin: 100px auto; text-align: center; background: var(--bg-card); border: 1px solid rgba(212, 175, 55, 0.2); padding: 3rem 2rem; border-radius: 16px; }
         .login-icon { font-size: 3rem; color: var(--gold-primary); margin-bottom: 1rem; }
         
-        /* Loader */
         .loader { display: none; text-align: center; padding: 2rem; color: var(--gold-primary); }
         .loader i { font-size: 2rem; margin-bottom: 1rem; animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -100,7 +76,6 @@
 
     <!-- PANEL DE ADMIN -->
     <div id="admin-panel" class="admin-container" style="display: none;">
-        <!-- Barra superior -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #333; padding-bottom: 1rem;">
             <a href="../index.html" class="btn-volver">
                 <i class="fa-solid fa-store"></i> Ver Tienda
@@ -136,7 +111,6 @@
                     <input type="hidden" id="prod-imagen-url">
                 </div>
                 
-                <!-- SELECTOR DE TALLAS POR CHECKBOX -->
                 <div class="admin-form-group">
                     <label>Tallas Disponibles (Marca las que tengas)</label>
                     <div class="checkbox-group" id="group-tallas">
@@ -148,7 +122,6 @@
                     </div>
                 </div>
 
-                <!-- SELECTOR DE COLORES POR CHECKBOX -->
                 <div class="admin-form-group">
                     <label>Colores Disponibles (Marca los que tengas)</label>
                     <div class="checkbox-group" id="group-colores">
@@ -169,25 +142,15 @@
                 </button>
             </div>
 
-            <!-- TABLA DE PRODUCTOS -->
+            <!-- TABLA -->
             <div class="table-container">
                 <h3 style="color: white; margin-bottom: 1rem; font-family: var(--font-title); font-size: 1.1rem;">
                     <i class="fa-solid fa-list" style="color: var(--gold-primary);"></i> Productos en Tienda
                 </h3>
-                
-                <div id="loader" class="loader">
-                    <i class="fa-solid fa-spinner"></i>
-                    <p>Cargando productos...</p>
-                </div>
-
+                <div id="loader" class="loader"><i class="fa-solid fa-spinner"></i><p>Cargando productos...</p></div>
                 <table class="admin-table">
                     <thead>
-                        <tr>
-                            <th>Imagen</th>
-                            <th>Nombre</th>
-                            <th>Precio</th>
-                            <th>Acciones</th>
-                        </tr>
+                        <tr><th>Imagen</th><th>Nombre</th><th>Precio</th><th>Acciones</th></tr>
                     </thead>
                     <tbody id="tbody-productos"></tbody>
                 </table>
@@ -198,7 +161,7 @@
     <script>
         // ⚠️ CONFIGURACIÓN
         const GOOGLE_SHEETS_API = 'https://script.google.com/macros/s/AKfycbyAyFb8r7kqhfY8aLRfhk5vudQHRNrQAxhzgB7TynjUtLZcdcGPSzuBg82aTd-a799F/exec';
-        const IMGBB_API_KEY = 'TU_API_KEY_AQUI'; // ⚠️ PEGA TU API KEY DE IMGBB AQUÍ
+        const IMGBB_API_KEY = 'd885018b58fe9232ff84c3cf4ba9ee76'; // ⚠️ PEGA TU API KEY DE IMGBB AQUÍ
         const ADMIN_PASSWORD = 'sello100admin';
 
         if (localStorage.getItem('sello100_admin_logged') === 'true') mostrarPanel();
@@ -241,8 +204,8 @@
                                 <td>${prod.nombre}</td>
                                 <td style="color: var(--gold-primary); font-weight: bold;">$${Number(prod.precio).toFixed(2)}</td>
                                 <td>
-                                    <button class="btn-accion btn-editar" onclick='prepararEdicion(${JSON.stringify(prod)})' title="Editar Producto"><i class="fa-solid fa-pen"></i></button>
-                                    <button class="btn-accion btn-eliminar" onclick="eliminarProducto(${prod.id})" title="Eliminar Producto"><i class="fa-solid fa-trash"></i></button>
+                                    <button class="btn-accion btn-editar" onclick='prepararEdicion(${JSON.stringify(prod)})' title="Editar"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn-accion btn-eliminar" onclick="eliminarProducto(${prod.id})" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                                 </td>
                             </tr>
                         `;
@@ -263,7 +226,7 @@
             document.body.appendChild(script);
         }
 
-                function prepararEdicion(prod) {
+        function prepararEdicion(prod) {
             document.getElementById('form-title').innerHTML = '<i class="fa-solid fa-pen-to-square" style="color: var(--gold-primary);"></i> Editando Producto';
             document.getElementById('prod-id').value = prod.id;
             document.getElementById('prod-nombre').value = prod.nombre;
@@ -271,36 +234,24 @@
             document.getElementById('prod-imagen-url').value = prod.imagen;
             document.getElementById('prod-imagen-file').value = '';
             
-            // 1. Limpiamos todos los checkboxes primero
             document.querySelectorAll('input[type="checkbox"]').forEach(chk => chk.checked = false);
 
-            // 2. Marcamos las tallas (convertimos a mayúsculas para comparar)
             if (prod.tallas) {
                 const tallasArray = prod.tallas.toString().toUpperCase().split(',').map(t => t.trim());
                 document.querySelectorAll('#group-tallas input[type="checkbox"]').forEach(chk => {
-                    if (tallasArray.includes(chk.value.toUpperCase())) {
-                        chk.checked = true;
-                    }
+                    if (tallasArray.includes(chk.value.toUpperCase())) chk.checked = true;
                 });
             }
 
-            // 3. Marcamos los colores (convertimos a mayúsculas para comparar)
             if (prod.color) {
                 const coloresArray = prod.color.toString().toUpperCase().split(',').map(c => c.trim());
                 document.querySelectorAll('#group-colores input[type="checkbox"]').forEach(chk => {
-                    if (coloresArray.includes(chk.value.toUpperCase())) {
-                        chk.checked = true;
-                    }
+                    if (coloresArray.includes(chk.value.toUpperCase())) chk.checked = true;
                 });
-            } else {
-                // Si el producto no tiene color guardado, por defecto marcamos Negro y Blanco
-                document.getElementById('color-negro').checked = true;
-                document.getElementById('color-blanco').checked = true;
             }
             
             document.getElementById('btn-guardar').innerHTML = '<i class="fa-solid fa-check"></i> Actualizar Producto';
             document.getElementById('btn-cancelar').style.display = 'block';
-            
             document.getElementById('form-title').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
@@ -311,15 +262,12 @@
             document.getElementById('prod-precio').value = '';
             document.getElementById('prod-imagen-url').value = '';
             document.getElementById('prod-imagen-file').value = '';
-            
-            // Desmarcar todos los checkboxes
             document.querySelectorAll('input[type="checkbox"]').forEach(chk => chk.checked = false);
-            
             document.getElementById('btn-guardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Producto';
             document.getElementById('btn-cancelar').style.display = 'none';
         }
 
-                    async function guardarProducto() {
+        async function guardarProducto() {
             const id = document.getElementById('prod-id').value;
             const nombre = document.getElementById('prod-nombre').value.trim();
             const precio = parseFloat(document.getElementById('prod-precio').value);
@@ -327,12 +275,8 @@
             const imagenUrlActual = document.getElementById('prod-imagen-url').value;
             const btn = document.getElementById('btn-guardar');
 
-            if (!nombre || !precio) {
-                alert("Por favor, completa el nombre y el precio.");
-                return;
-            }
+            if (!nombre || !precio) return alert("Completa nombre y precio.");
 
-            // Obtener tallas y colores
             const tallasSeleccionadas = Array.from(document.querySelectorAll('#group-tallas input:checked')).map(cb => cb.value).join(',');
             const coloresSeleccionados = Array.from(document.querySelectorAll('#group-colores input:checked')).map(cb => cb.value).join(',');
 
@@ -345,34 +289,20 @@
             try {
                 let urlImagen = imagenUrlActual;
 
-                // SI HAY UNA NUEVA IMAGEN, LA COMPRIMIMOS Y SUBIMOS
                 if (imagenFile) {
                     btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Subiendo imagen...';
-                    
-                    // Comprimir imagen a un máximo de 800px de ancho
                     const imagenComprimida = await comprimirImagen(imagenFile, 800, 0.7);
-                    
                     const formData = new FormData();
                     formData.append('image', imagenComprimida);
-                    
                     const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
                     const resJson = await resp.json();
-                    
                     if (!resJson.success) throw new Error(resJson.error ? resJson.error.message : 'ImgBB rechazó la imagen.');
                     urlImagen = resJson.data.url;
                 }
 
                 if (!urlImagen) throw new Error('Debes seleccionar una imagen.');
 
-                const dataToSend = { 
-                    id: id || null, 
-                    nombre: nombre, 
-                    precio: precio, 
-                    imagen: urlImagen, 
-                    tallas: tallasSeleccionadas, 
-                    color: coloresSeleccionados, 
-                    tela: "Personalizada" 
-                };
+                const dataToSend = { id: id || null, nombre, precio, imagen: urlImagen, tallas: tallasSeleccionadas, color: coloresSeleccionados, tela: "Personalizada" };
 
                 btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
                 
@@ -396,13 +326,11 @@
                 console.error(error);
                 alert("❌ Error al subir: " + error.message);
             } finally {
-                // ESTO DESBLOQUEA EL BOTÓN SIEMPRE, PASE LO QUE PASE
                 btn.innerHTML = document.getElementById('prod-id').value ? '<i class="fa-solid fa-check"></i> Actualizar Producto' : '<i class="fa-solid fa-floppy-disk"></i> Guardar Producto';
                 btn.disabled = false;
             }
         }
 
-        // --- FUNCIÓN PARA COMPRIMIR LA IMAGEN ANTES DE SUBIRLA ---
         function comprimirImagen(file, maxWidth, quality) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -414,123 +342,36 @@
                         const canvas = document.createElement('canvas');
                         let width = img.width;
                         let height = img.height;
-
-                        if (width > maxWidth) {
-                            height = Math.round((height * maxWidth) / width);
-                            width = maxWidth;
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-
+                        if (width > maxWidth) { height = Math.round((height * maxWidth) / width); width = maxWidth; }
+                        canvas.width = width; canvas.height = height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
-
                         canvas.toBlob((blob) => {
                             if (blob) {
-                                const compressedFile = new File([blob], "foto_comprimida.jpg", {
-                                    type: "image/jpeg",
-                                    lastModified: Date.now()
-                                });
+                                const compressedFile = new File([blob], "foto_comprimida.jpg", { type: "image/jpeg", lastModified: Date.now() });
                                 resolve(compressedFile);
-                            } else {
-                                reject(new Error("Error al comprimir la imagen"));
-                            }
+                            } else { reject(new Error("Error al comprimir")); }
                         }, 'image/jpeg', quality);
                     };
-                    img.onerror = () => reject(new Error("Error al leer la imagen"));
+                    img.onerror = () => reject(new Error("Error al leer imagen"));
                 };
-                reader.onerror = () => reject(new Error("Error al cargar el archivo"));
+                reader.onerror = () => reject(new Error("Error al cargar archivo"));
             });
         }
-            const id = document.getElementById('prod-id').value;
-            const nombre = document.getElementById('prod-nombre').value.trim();
-            const precio = parseFloat(document.getElementById('prod-precio').value);
-            const imagenFile = document.getElementById('prod-imagen-file').files[0];
-            const imagenUrlActual = document.getElementById('prod-imagen-url').value;
-            const btn = document.getElementById('btn-guardar');
 
-            if (!nombre || !precio) {
-                alert("Por favor, completa el nombre y el precio.");
-                return;
-            }
-
-            // Obtener tallas y colores seleccionados
-            const tallasSeleccionadas = Array.from(document.querySelectorAll('#group-tallas input:checked')).map(cb => cb.value).join(',');
-            const coloresSeleccionados = Array.from(document.querySelectorAll('#group-colores input:checked')).map(cb => cb.value).join(',');
-
-            if (!tallasSeleccionadas) return alert("Selecciona al menos una talla.");
-            if (!coloresSeleccionados) return alert("Selecciona al menos un color.");
-
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
-            btn.disabled = true;
-
-            try {
-                let urlImagen = imagenUrlActual;
-
-                if (imagenFile) {
-                    btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Subiendo imagen...';
-                    const formData = new FormData();
-                    formData.append('image', imagenFile);
-                    const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
-                    const resJson = await resp.json();
-                    if (!resJson.success) throw new Error('Error al subir imagen.');
-                    urlImagen = resJson.data.url;
-                }
-
-                if (!urlImagen) throw new Error('Debes seleccionar una imagen.');
-
-                const dataToSend = { 
-                    id: id || null, nombre: nombre, precio: precio, imagen: urlImagen, 
-                    tallas: tallasSeleccionadas, color: coloresSeleccionados, tela: "Personalizada" 
-                };
-
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
-                
-                if (!document.getElementById('hidden_iframe')) {
-                    const iframe = document.createElement('iframe');
-                    iframe.name = 'hidden_iframe'; iframe.id = 'hidden_iframe'; iframe.style.display = 'none';
-                    document.body.appendChild(iframe);
-                }
-                
-                const form = document.createElement('form');
-                form.method = 'POST'; form.action = GOOGLE_SHEETS_API; form.target = 'hidden_iframe';
-                const input = document.createElement('input');
-                input.type = 'hidden'; input.name = 'data'; input.value = JSON.stringify(dataToSend);
-                form.appendChild(input); document.body.appendChild(form); form.submit(); document.body.removeChild(form);
-
-                alert(id ? "✅ Producto actualizado." : "✅ Producto añadido.");
-                cancelarEdicion();
-                setTimeout(cargarProductos, 2500);
-
-            } catch (error) {
-                console.error(error);
-                alert("❌ Error: " + error.message);
-            } finally {
-                btn.innerHTML = document.getElementById('prod-id').value ? '<i class="fa-solid fa-check"></i> Actualizar Producto' : '<i class="fa-solid fa-floppy-disk"></i> Guardar Producto';
-                btn.disabled = false;
-            }
-        
-
-         function eliminarProducto(id) {
+        function eliminarProducto(id) {
             if (confirm("⚠️ ¿Estás seguro que deseas eliminar este producto de la tienda?\n\nEsta acción no se puede deshacer.")) {
-                
-                // Enviamos la orden de eliminación a Google Sheets
                 const dataToSend = { action: "delete", id: id };
-
                 if (!document.getElementById('hidden_iframe')) {
                     const iframe = document.createElement('iframe');
                     iframe.name = 'hidden_iframe'; iframe.id = 'hidden_iframe'; iframe.style.display = 'none';
                     document.body.appendChild(iframe);
                 }
-                
                 const form = document.createElement('form');
                 form.method = 'POST'; form.action = GOOGLE_SHEETS_API; form.target = 'hidden_iframe';
                 const input = document.createElement('input');
                 input.type = 'hidden'; input.name = 'data'; input.value = JSON.stringify(dataToSend);
                 form.appendChild(input); document.body.appendChild(form); form.submit(); document.body.removeChild(form);
-
-                // Recargamos la tabla para ver el cambio
                 alert("Producto eliminado. Actualizando tabla...");
                 setTimeout(cargarProductos, 2000);
             }
