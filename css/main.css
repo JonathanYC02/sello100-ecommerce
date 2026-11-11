@@ -328,3 +328,170 @@ input[type="file"]::file-selector-button {
         height: 150px; /* Mapa un poco más pequeño en celular */
     }
 }
+/* =========================================
+   BOTÓN FLOTANTE DE WHATSAPP
+   ========================================= */
+.whatsapp-float {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    bottom: 30px;
+    right: 30px;
+    background-color: #25d366;
+    color: #FFF;
+    border-radius: 50px;
+    text-align: center;
+    font-size: 35px;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    animation: pulse-wa 2s infinite;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+    color: #FFF;
+}
+
+@keyframes pulse-wa {
+    0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+
+/* =========================================
+   FOOTER (PIE DE PÁGINA)
+   ========================================= */
+.site-footer {
+    background: #050505;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+    padding: 4rem 2rem 2rem;
+    margin-top: 4rem;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
+
+.footer-brand h3 {
+    font-family: var(--font-title);
+    color: var(--gold-primary);
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+}
+
+.footer-brand p {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.footer-social h4, .footer-links h4 {
+    color: #fff;
+    font-family: var(--font-title);
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+
+.footer-social a {
+    color: var(--gold-primary);
+    font-size: 1.8rem;
+    margin-right: 15px;
+    transition: all 0.3s;
+}
+
+.footer-social a:hover {
+    color: #fff;
+    transform: translateY(-3px);
+    display: inline-block;
+}
+
+.footer-links ul {
+    list-style: none;
+}
+
+.footer-links ul li {
+    margin-bottom: 0.8rem;
+}
+
+.footer-links ul li a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-links ul li a:hover {
+    color: var(--gold-primary);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    color: #666;
+    font-size: 0.85rem;
+}
+
+/* =========================================
+   SECCIÓN DE ENVÍOS
+   ========================================= */
+.shipping-info {
+    padding: 5rem 4rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.shipping-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.shipping-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 16px;
+    padding: 2.5rem;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.shipping-card:hover {
+    border-color: var(--gold-primary);
+    transform: translateY(-5px);
+}
+
+.shipping-card i {
+    font-size: 2.5rem;
+    color: var(--gold-primary);
+    margin-bottom: 1.5rem;
+}
+
+.shipping-card h3 {
+    font-family: var(--font-title);
+    color: #fff;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.shipping-card p {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* Ajuste para móviles */
+@media (max-width: 768px) {
+    .shipping-info { padding: 3rem 1.5rem; }
+    .whatsapp-float { width: 50px; height: 50px; font-size: 28px; bottom: 20px; right: 20px; }
+}

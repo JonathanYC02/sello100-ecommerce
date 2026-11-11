@@ -12,72 +12,122 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/catalogo.css">
 
-        <style>
-#products-grid {
-    display: grid !important;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
-    gap: 2rem !important;
-    width: 100%;
-    padding: 1rem 0;
-}
+    <style>
+        /* Estilos de emergencia para asegurar que las tarjetas se vean bien */
+        #products-grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+            gap: 2rem !important;
+            width: 100%;
+            padding: 1rem 0;
+        }
 
-.product-card {
-    background: var(--bg-card) !important;
-    border: 1px solid rgba(212, 175, 55, 0.2) !important;
-    border-radius: 12px !important;
-    padding: 1.5rem !important;
-    display: flex !important;
-    flex-direction: column !important;
-    text-align: center;
-    opacity: 1 !important; /* Forzamos a que se vea */
-    transform: translateY(0) !important;
-}
+        .product-card {
+            background: var(--bg-card) !important;
+            border: 1px solid rgba(212, 175, 55, 0.2) !important;
+            border-radius: 12px !important;
+            padding: 1.5rem !important;
+            display: flex !important;
+            flex-direction: column !important;
+            text-align: center;
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
 
-.product-img-container {
-    width: 100% !important;
-    height: 300px !important;
-    overflow: hidden !important;
-    border-radius: 8px !important;
-    margin-bottom: 1.2rem !important;
-    background-color: #111 !important;
-}
+        .product-img-container {
+            width: 100% !important;
+            height: 300px !important;
+            overflow: hidden !important;
+            border-radius: 8px !important;
+            margin-bottom: 1.2rem !important;
+            background-color: #111 !important;
+        }
 
-.product-img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    display: block !important;
-}
+        .product-img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            display: block !important;
+        }
 
-.product-title {
-    font-family: var(--font-title);
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-    color: #fff;
-}
+        .product-title {
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
 
-.product-price {
-    color: var(--gold-primary);
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 1.2rem;
-    margin-top: auto !important;
-}
+        .product-price {
+            color: var(--gold-primary);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            margin-top: auto !important;
+        }
 
-.btn-add-cart {
-    background: transparent;
-    border: 1px solid var(--gold-primary);
-    color: var(--gold-primary);
-    padding: 0.8rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    font-family: var(--font-title);
-    font-size: 0.8rem;
-    letter-spacing: 1px;
-    transition: all 0.3s;
-    width: 100%;
-}
+        .btn-add-cart {
+            background: transparent;
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-primary);
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: var(--font-title);
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .btn-add-cart:hover {
+            background: var(--gold-primary);
+            color: var(--bg-color);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Estilos para la sección Conócenos */
+        .about-section { padding: 5rem 4rem; max-width: 1400px; margin: 0 auto; }
+        .about-container { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        .about-text p { color: var(--text-muted); line-height: 1.8; margin-bottom: 1.5rem; font-size: 1.1rem; }
+        .about-text strong { color: var(--gold-primary); }
+        .about-image img { width: 100%; border-radius: 16px; border: 1px solid rgba(212, 175, 55, 0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        /* Estilos para la sección Envíos */
+        .shipping-info { padding: 5rem 4rem; max-width: 1400px; margin: 0 auto; }
+        .shipping-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem; }
+        .shipping-card { background: var(--bg-card); border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 16px; padding: 2.5rem; text-align: center; transition: all 0.3s; }
+        .shipping-card:hover { border-color: var(--gold-primary); transform: translateY(-5px); }
+        .shipping-card i { font-size: 2.5rem; color: var(--gold-primary); margin-bottom: 1.5rem; }
+        .shipping-card h3 { font-family: var(--font-title); color: #fff; margin-bottom: 1rem; font-size: 1.2rem; }
+        .shipping-card p { color: var(--text-muted); line-height: 1.6; }
+
+        /* Footer */
+        .site-footer { background: #050505; border-top: 1px solid rgba(212, 175, 55, 0.2); padding: 4rem 2rem 2rem; margin-top: 4rem; }
+        .footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-bottom: 3rem; }
+        .footer-brand h3 { font-family: var(--font-title); color: var(--gold-primary); font-size: 1.5rem; letter-spacing: 2px; margin-bottom: 1rem; }
+        .footer-brand p { color: var(--text-muted); line-height: 1.6; }
+        .footer-social h4, .footer-links h4 { color: #fff; font-family: var(--font-title); margin-bottom: 1.5rem; font-size: 1rem; letter-spacing: 1px; }
+        .footer-social a { color: var(--gold-primary); font-size: 1.8rem; margin-right: 15px; transition: all 0.3s; }
+        .footer-social a:hover { color: #fff; transform: translateY(-3px); display: inline-block; }
+        .footer-links ul { list-style: none; }
+        .footer-links ul li { margin-bottom: 0.8rem; }
+        .footer-links ul li a { color: var(--text-muted); text-decoration: none; transition: color 0.3s; }
+        .footer-links ul li a:hover { color: var(--gold-primary); }
+        .footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.05); color: #666; font-size: 0.85rem; }
+
+        /* WhatsApp Flotante */
+        .whatsapp-float { position: fixed; width: 60px; height: 60px; bottom: 30px; right: 30px; background-color: #25d366; color: #FFF; border-radius: 50px; text-align: center; font-size: 35px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; animation: pulse-wa 2s infinite; }
+        .whatsapp-float:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6); color: #FFF; }
+        @keyframes pulse-wa { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .about-section { padding: 3rem 1.5rem; }
+            .about-container { grid-template-columns: 1fr; gap: 2rem; }
+            .shipping-info { padding: 3rem 1.5rem; }
+            .whatsapp-float { width: 50px; height: 50px; font-size: 28px; bottom: 20px; right: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -94,7 +144,7 @@
         </div>
         <ul class="nav-links">
             <li><a href="index.html" class="active">Catálogo</a></li>
-            <li><a href="page/personalizar.html">Personalizar</a></li>
+            <li><a href="#conocenos">Conócenos</a></li>
             <li><a href="#envios">Envíos</a></li>
         </ul>
         <div class="cart-icon" id="cart-btn">
@@ -107,10 +157,7 @@
     <header class="hero">
         <div class="hero-content">
             <h1 class="hero-title reveal-up">VISTE TU <span class="gold-text">FE</span></h1>
-            <p class="hero-subtitle reveal-up delay-1">Moda masculina con propósito. Diseños exclusivos y personalización en tiempo real.</p>
-            <div class="reveal-up delay-2">
-                <a href="page/personalizar.html" class="btn-gold">Crear mi diseño <i class="fa-solid fa-wand-magic-sparkles"></i></a>
-            </div>
+            <p class="hero-subtitle reveal-up delay-1">Moda masculina con propósito. Diseños exclusivos y calidad garantizada.</p>
         </div>
     </header>
 
@@ -118,6 +165,42 @@
     <section class="catalog-section" id="catalogo">
         <h2 class="section-title reveal-up">Colección <span class="gold-text">Exclusiva</span></h2>
         <div class="products-grid" id="products-grid"></div>
+    </section>
+
+    <!-- SECCIÓN CONÓCENOS -->
+    <section class="about-section" id="conocenos">
+        <div class="about-container">
+            <div class="about-text reveal-left">
+                <h2 class="section-title" style="text-align: left; margin-bottom: 1.5rem;">Sobre <span class="gold-text">Nosotros</span></h2>
+                <p>En <strong>Sello 100</strong> creemos que la moda es una forma de expresar lo que llevamos por dentro. Nacimos en Guayaquil con el propósito de ofrecer ropa masculina de alta calidad que combine estilo, comodidad y fe.</p>
+                <p>Cada prenda es seleccionada pensando en el hombre moderno que busca verse bien sin sacrificar sus valores. Gracias por ser parte de esta comunidad.</p>
+            </div>
+            <div class="about-image reveal-right">
+                <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=1000&auto=format&fit=crop" alt="Sobre Sello 100">
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE ENVÍOS -->
+    <section class="shipping-info" id="envios">
+        <h2 class="section-title reveal-up">Información de <span class="gold-text">Envíos</span></h2>
+        <div class="shipping-grid">
+            <div class="shipping-card reveal-up delay-1">
+                <i class="fa-solid fa-motorcycle"></i>
+                <h3>Envíos en Guayaquil</h3>
+                <p>Entregas de 24 a 48 horas. El costo se calcula automáticamente según tu distancia en el mapa al momento de pagar.</p>
+            </div>
+            <div class="shipping-card reveal-up delay-2">
+                <i class="fa-solid fa-box-open"></i>
+                <h3>Retiro en Local</h3>
+                <p>Puedes retirar sin costo. Escríbenos por WhatsApp para coordinar la entrega en nuestro punto de origen.</p>
+            </div>
+            <div class="shipping-card reveal-up delay-3">
+                <i class="fa-solid fa-shield-halved"></i>
+                <h3>Compra Segura</h3>
+                <p>Tu pago se valida mediante comprobante antes de despachar. Calidad garantizada en cada prenda.</p>
+            </div>
+        </div>
     </section>
 
     <!-- Modal del Carrito -->
@@ -173,7 +256,6 @@
                 <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">2. Sube tu comprobante</h3>
                 <input type="file" id="comprobante" accept="image/*" style="color: var(--text-main); font-size: 0.9rem; margin-bottom: 10px;">
                 
-                <!-- Contenedor para la vista previa -->
                 <div id="preview-container" style="display: none; text-align: center; margin-top: 10px;">
                     <img id="image-preview" src="" alt="Vista previa" style="max-width: 100%; max-height: 150px; border-radius: 8px; border: 1px solid var(--gold-primary);">
                     <p style="font-size: 0.8rem; color: #888; margin-top: 5px;">Imagen seleccionada</p>
@@ -194,6 +276,43 @@
         </div>
     </div>
 
+    <!-- BOTÓN FLOTANTE DE WHATSAPP -->
+    <a href="https://wa.me/593962576433?text=Hola%20Sello%20100,%20tengo%20una%20consulta." 
+       target="_blank" 
+       class="whatsapp-float" 
+       aria-label="Contactar por WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>SELLO 100</h3>
+                <p>Moda masculina con propósito. Viste tu fe con estilo.</p>
+            </div>
+            <div class="footer-social">
+                <h4>Síguenos</h4>
+                <a href="https://www.tiktok.com/@sello.100?_r=1&_t=ZS-9BIli0godnB" target="_blank" aria-label="TikTok">
+                    <i class="fa-brands fa-tiktok"></i>
+                </a>
+                <!-- Aquí pondrás el Instagram luego -->
+                <a href="#" target="_blank" aria-label="Instagram" style="opacity: 0.5; cursor: not-allowed;" title="Próximamente">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+            </div>
+            <div class="footer-links">
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="index.html">Catálogo</a></li>
+                    <li><a href="page/admin.html">Admin</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Sello 100. Todos los derechos reservados.</p>
+        </div>
+    </footer>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
