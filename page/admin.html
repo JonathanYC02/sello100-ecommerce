@@ -18,6 +18,7 @@
         .admin-form-group small { color: #888; display: block; margin-bottom: 5px; font-size: 0.8rem; }
         .admin-input { width: 100%; padding: 0.8rem; background: #111; border: 1px solid #333; color: white; border-radius: 8px; font-family: var(--font-body); transition: 0.3s; }
         .admin-input:focus { outline: none; border-color: var(--gold-primary); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+        textarea.admin-input { resize: vertical; min-height: 80px; }
         .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; }
         .checkbox-item { position: relative; }
         .checkbox-item input[type="checkbox"] { display: none; }
@@ -46,7 +47,6 @@
     <div class="bg-grid"></div>
     <div class="glow-orb orb-gold"></div>
 
-    <!-- LOGIN -->
     <div id="login-section" class="login-box">
         <div class="login-icon"><i class="fa-solid fa-user-gear"></i></div>
         <h2 class="admin-title">SELLO 100</h2>
@@ -63,7 +63,6 @@
         </div>
     </div>
 
-    <!-- PANEL DE ADMIN -->
     <div id="admin-panel" class="admin-container" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #333; padding-bottom: 1rem;">
             <a href="../index.html" class="btn-volver"><i class="fa-solid fa-store"></i> Ver Tienda</a>
@@ -74,7 +73,6 @@
         <p class="admin-subtitle">Hola Derian, desde aquí puedes añadir, editar o eliminar tus productos.</p>
 
         <div class="admin-grid">
-            <!-- FORMULARIO -->
             <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; border: 1px solid #222;">
                 <h3 style="color: white; margin-bottom: 1rem; font-family: var(--font-title); font-size: 1.1rem;" id="form-title">
                     <i class="fa-solid fa-plus-circle" style="color: var(--gold-primary);"></i> Añadir Nuevo Producto
@@ -88,6 +86,10 @@
                 <div class="admin-form-group">
                     <label>Precio en Dólares ($)</label>
                     <input type="number" id="prod-precio" class="admin-input" step="0.01" placeholder="Ej: 25.00">
+                </div>
+                <div class="admin-form-group">
+                    <label>Descripción (Opcional)</label>
+                    <textarea id="prod-descripcion" class="admin-input" placeholder="Ej: Tela de algodón premium, ajuste oversize, estampado DTF duradero..."></textarea>
                 </div>
                 <div class="admin-form-group">
                     <label>Imagen de la Prenda</label>
@@ -120,8 +122,8 @@
                 </div>
 
                 <div class="admin-form-group">
-                    <label>Otros Colores (Escribe separados por coma)</label>
-                    <small>Ej: Verde, Azul Jean, Beige Claro. (Se suman a los checkboxes)</small>
+                    <label>Otros Colores (Separados por coma)</label>
+                    <small>Ej: Verde, Azul Jean, Beige Claro.</small>
                     <input type="text" id="prod-colores-extra" class="admin-input" placeholder="Verde, Azul Jean...">
                 </div>
                 
@@ -133,7 +135,6 @@
                 </button>
             </div>
 
-            <!-- TABLA -->
             <div class="table-container">
                 <h3 style="color: white; margin-bottom: 1rem; font-family: var(--font-title); font-size: 1.1rem;">
                     <i class="fa-solid fa-list" style="color: var(--gold-primary);"></i> Productos en Tienda
@@ -151,7 +152,7 @@
 
     <script>
         const GOOGLE_SHEETS_API = 'https://script.google.com/macros/s/AKfycbyAyFb8r7kqhfY8aLRfhk5vudQHRNrQAxhzgB7TynjUtLZcdcGPSzuBg82aTd-a799F/exec';
-        const IMGBB_API_KEY = 'TU_API_KEY_AQUI'; 
+        const IMGBB_API_KEY = 'TU_API_KEY_AQUI'; // ⚠️ PEGA TU API KEY AQUÍ
         const ADMIN_PASSWORD = 'sello100admin';
 
         function setSessionCookie() {
@@ -177,9 +178,7 @@
         }
 
         window.onload = function() {
-            if (getSessionCookie() === ADMIN_PASSWORD) {
-                mostrarPanel();
-            }
+            if (getSessionCookie() === ADMIN_PASSWORD) mostrarPanel();
         };
 
         function login() {
@@ -227,7 +226,6 @@
                         `;
                     });
                 }
-                
                 document.getElementById('loader').style.display = 'none';
                 document.body.removeChild(script);
                 delete window[callbackName];
@@ -247,6 +245,7 @@
             document.getElementById('prod-id').value = prod.id;
             document.getElementById('prod-nombre').value = prod.nombre;
             document.getElementById('prod-precio').value = prod.precio;
+            document.getElementById('prod-descripcion').value = prod.descripcion || ''; // Cargar descripción
             document.getElementById('prod-imagen-url').value = prod.imagen;
             document.getElementById('prod-imagen-file').value = '';
             
@@ -286,6 +285,7 @@
             document.getElementById('prod-id').value = '';
             document.getElementById('prod-nombre').value = '';
             document.getElementById('prod-precio').value = '';
+            document.getElementById('prod-descripcion').value = '';
             document.getElementById('prod-imagen-url').value = '';
             document.getElementById('prod-imagen-file').value = '';
             document.getElementById('prod-colores-extra').value = '';
@@ -298,6 +298,7 @@
             const id = document.getElementById('prod-id').value;
             const nombre = document.getElementById('prod-nombre').value.trim();
             const precio = parseFloat(document.getElementById('prod-precio').value);
+            const descripcion = document.getElementById('prod-descripcion').value.trim(); // Obtener descripción
             const imagenFile = document.getElementById('prod-imagen-file').files[0];
             const imagenUrlActual = document.getElementById('prod-imagen-url').value;
             const btn = document.getElementById('btn-guardar');
@@ -332,7 +333,16 @@
 
                 if (!urlImagen) throw new Error('Debes seleccionar una imagen.');
 
-                const dataToSend = { id: id || null, nombre, precio, imagen: urlImagen, tallas: tallasSeleccionadas, color: coloresSeleccionados, tela: "Personalizada" };
+                const dataToSend = { 
+                    id: id || null, 
+                    nombre, 
+                    precio, 
+                    descripcion, // Enviar descripción
+                    imagen: urlImagen, 
+                    tallas: tallasSeleccionadas, 
+                    color: coloresSeleccionados, 
+                    tela: "Personalizada" 
+                };
 
                 btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
                 
