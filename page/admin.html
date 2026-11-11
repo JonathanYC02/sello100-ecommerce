@@ -89,15 +89,28 @@
                 </div>
                 <div class="admin-form-group">
                     <label>Descripción (Opcional)</label>
-                    <textarea id="prod-descripcion" class="admin-input" placeholder="Ej: Tela de algodón premium, ajuste oversize, estampado DTF duradero..."></textarea>
+                    <textarea id="prod-descripcion" class="admin-input" placeholder="Ej: Tela de algodón premium, ajuste oversize..."></textarea>
                 </div>
+                
                 <div class="admin-form-group">
-                    <label>Imagen de la Prenda</label>
-                    <small>Sube una foto clara (se comprime automáticamente).</small>
+                    <label>Imagen Principal (Obligatoria)</label>
+                    <small>Sube la foto principal del producto.</small>
                     <input type="file" id="prod-imagen-file" accept="image/*" class="admin-input" style="padding: 0.5rem;">
                     <input type="hidden" id="prod-imagen-url">
                 </div>
-                
+                <div class="admin-form-group">
+                    <label>Imagen Secundaria 1 (Opcional)</label>
+                    <small>Ej: Foto del color o detalle.</small>
+                    <input type="file" id="prod-imagen-file2" accept="image/*" class="admin-input" style="padding: 0.5rem;">
+                    <input type="hidden" id="prod-imagen-url2">
+                </div>
+                <div class="admin-form-group">
+                    <label>Imagen Secundaria 2 (Opcional)</label>
+                    <small>Ej: Foto con una persona usando la prenda.</small>
+                    <input type="file" id="prod-imagen-file3" accept="image/*" class="admin-input" style="padding: 0.5rem;">
+                    <input type="hidden" id="prod-imagen-url3">
+                </div>
+
                 <div class="admin-form-group">
                     <label>Tallas Disponibles</label>
                     <div class="checkbox-group" id="group-tallas">
@@ -123,7 +136,6 @@
 
                 <div class="admin-form-group">
                     <label>Otros Colores (Separados por coma)</label>
-                    <small>Ej: Verde, Azul Jean, Beige Claro.</small>
                     <input type="text" id="prod-colores-extra" class="admin-input" placeholder="Verde, Azul Jean...">
                 </div>
                 
@@ -141,9 +153,7 @@
                 </h3>
                 <div id="loader" class="loader"><i class="fa-solid fa-spinner"></i><p>Cargando productos...</p></div>
                 <table class="admin-table">
-                    <thead>
-                        <tr><th>Imagen</th><th>Nombre</th><th>Precio</th><th>Acciones</th></tr>
-                    </thead>
+                    <thead><tr><th>Imagen</th><th>Nombre</th><th>Precio</th><th>Acciones</th></tr></thead>
                     <tbody id="tbody-productos"></tbody>
                 </table>
             </div>
@@ -152,7 +162,7 @@
 
     <script>
         const GOOGLE_SHEETS_API = 'https://script.google.com/macros/s/AKfycbyAyFb8r7kqhfY8aLRfhk5vudQHRNrQAxhzgB7TynjUtLZcdcGPSzuBg82aTd-a799F/exec';
-        const IMGBB_API_KEY = 'd885018b58fe9232ff84c3cf4ba9ee76'; // ⚠️ PEGA TU API KEY AQUÍ
+        const IMGBB_API_KEY = 'TU_API_KEY_AQUI'; // ⚠️ PEGA TU API KEY AQUÍ
         const ADMIN_PASSWORD = 'sello100admin';
 
         function setSessionCookie() {
@@ -160,7 +170,6 @@
             d.setTime(d.getTime() + (30 * 24 * 60 * 60 * 1000));
             document.cookie = "sello100_admin=" + ADMIN_PASSWORD + ";expires=" + d.toUTCString() + ";path=/";
         }
-
         function getSessionCookie() {
             const name = "sello100_admin=";
             const decodedCookie = decodeURIComponent(document.cookie);
@@ -172,28 +181,16 @@
             }
             return "";
         }
+        function deleteSessionCookie() { document.cookie = "sello100_admin=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;"; }
 
-        function deleteSessionCookie() {
-            document.cookie = "sello100_admin=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;";
-        }
-
-        window.onload = function() {
-            if (getSessionCookie() === ADMIN_PASSWORD) mostrarPanel();
-        };
+        window.onload = function() { if (getSessionCookie() === ADMIN_PASSWORD) mostrarPanel(); };
 
         function login() {
             if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) {
-                setSessionCookie();
-                mostrarPanel();
-            } else {
-                document.getElementById('login-error').style.display = 'block';
-            }
+                setSessionCookie(); mostrarPanel();
+            } else { document.getElementById('login-error').style.display = 'block'; }
         }
-
-        function logout() {
-            deleteSessionCookie();
-            location.reload();
-        }
+        function logout() { deleteSessionCookie(); location.reload(); }
 
         function mostrarPanel() {
             document.getElementById('login-section').style.display = 'none';
@@ -204,11 +201,9 @@
         function cargarProductos() {
             document.getElementById('loader').style.display = 'block';
             const callbackName = 'adminCallback_' + Date.now();
-            
             window[callbackName] = (data) => {
                 const tbody = document.getElementById('tbody-productos');
                 tbody.innerHTML = '';
-                
                 if (data.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#888;">No hay productos aún.</td></tr>';
                 } else {
@@ -222,21 +217,16 @@
                                     <button class="btn-accion btn-editar" onclick='prepararEdicion(${JSON.stringify(prod)})' title="Editar"><i class="fa-solid fa-pen"></i></button>
                                     <button class="btn-accion btn-eliminar" onclick="eliminarProducto(${prod.id})" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                                 </td>
-                            </tr>
-                        `;
+                            </tr>`;
                     });
                 }
                 document.getElementById('loader').style.display = 'none';
                 document.body.removeChild(script);
                 delete window[callbackName];
             };
-
             const script = document.createElement('script');
             script.src = `${GOOGLE_SHEETS_API}?callback=${callbackName}`;
-            script.onerror = () => {
-                document.getElementById('loader').style.display = 'none';
-                alert("Error de conexión con Google Sheets.");
-            };
+            script.onerror = () => { document.getElementById('loader').style.display = 'none'; alert("Error de conexión con Google Sheets."); };
             document.body.appendChild(script);
         }
 
@@ -245,9 +235,16 @@
             document.getElementById('prod-id').value = prod.id;
             document.getElementById('prod-nombre').value = prod.nombre;
             document.getElementById('prod-precio').value = prod.precio;
-            document.getElementById('prod-descripcion').value = prod.descripcion || ''; // Cargar descripción
-            document.getElementById('prod-imagen-url').value = prod.imagen;
+            document.getElementById('prod-descripcion').value = prod.descripcion || '';
+            
+            // Cargar imágenes separadas por coma
+            const imagenes = prod.imagen ? prod.imagen.split(',') : [];
+            document.getElementById('prod-imagen-url').value = imagenes[0] || '';
+            document.getElementById('prod-imagen-url2').value = imagenes[1] || '';
+            document.getElementById('prod-imagen-url3').value = imagenes[2] || '';
             document.getElementById('prod-imagen-file').value = '';
+            document.getElementById('prod-imagen-file2').value = '';
+            document.getElementById('prod-imagen-file3').value = '';
             
             document.querySelectorAll('input[type="checkbox"]').forEach(chk => chk.checked = false);
             document.getElementById('prod-colores-extra').value = '';
@@ -258,23 +255,17 @@
                     if (tallasArray.includes(chk.value.toUpperCase())) chk.checked = true;
                 });
             }
-
             if (prod.color) {
                 const coloresArray = prod.color.toString().split(',').map(c => c.trim());
                 const coloresPredeterminados = ['Negro', 'Blanco', 'Gris', 'Rojo', 'Azul', 'Beige'];
                 const extras = [];
-
                 coloresArray.forEach(color => {
                     const esPredeterminado = coloresPredeterminados.find(p => p.toLowerCase() === color.toLowerCase());
-                    if (esPredeterminado) {
-                        document.getElementById('color-' + esPredeterminado.toLowerCase()).checked = true;
-                    } else {
-                        extras.push(color);
-                    }
+                    if (esPredeterminado) { document.getElementById('color-' + esPredeterminado.toLowerCase()).checked = true; } 
+                    else { extras.push(color); }
                 });
                 document.getElementById('prod-colores-extra').value = extras.join(', ');
             }
-            
             document.getElementById('btn-guardar').innerHTML = '<i class="fa-solid fa-check"></i> Actualizar Producto';
             document.getElementById('btn-cancelar').style.display = 'block';
             document.getElementById('form-title').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -287,7 +278,11 @@
             document.getElementById('prod-precio').value = '';
             document.getElementById('prod-descripcion').value = '';
             document.getElementById('prod-imagen-url').value = '';
+            document.getElementById('prod-imagen-url2').value = '';
+            document.getElementById('prod-imagen-url3').value = '';
             document.getElementById('prod-imagen-file').value = '';
+            document.getElementById('prod-imagen-file2').value = '';
+            document.getElementById('prod-imagen-file3').value = '';
             document.getElementById('prod-colores-extra').value = '';
             document.querySelectorAll('input[type="checkbox"]').forEach(chk => chk.checked = false);
             document.getElementById('btn-guardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Producto';
@@ -298,17 +293,20 @@
             const id = document.getElementById('prod-id').value;
             const nombre = document.getElementById('prod-nombre').value.trim();
             const precio = parseFloat(document.getElementById('prod-precio').value);
-            const descripcion = document.getElementById('prod-descripcion').value.trim(); // Obtener descripción
-            const imagenFile = document.getElementById('prod-imagen-file').files[0];
-            const imagenUrlActual = document.getElementById('prod-imagen-url').value;
+            const descripcion = document.getElementById('prod-descripcion').value.trim();
+            const file1 = document.getElementById('prod-imagen-file').files[0];
+            const file2 = document.getElementById('prod-imagen-file2').files[0];
+            const file3 = document.getElementById('prod-imagen-file3').files[0];
+            const url1Actual = document.getElementById('prod-imagen-url').value;
+            const url2Actual = document.getElementById('prod-imagen-url2').value;
+            const url3Actual = document.getElementById('prod-imagen-url3').value;
             const btn = document.getElementById('btn-guardar');
 
             if (!nombre || !precio) return alert("Completa nombre y precio.");
-
+            
             const coloresCheck = Array.from(document.querySelectorAll('#group-colores input:checked')).map(cb => cb.value);
             const coloresExtra = document.getElementById('prod-colores-extra').value.split(',').map(c => c.trim()).filter(c => c !== '');
             const coloresSeleccionados = [...coloresCheck, ...coloresExtra].join(',');
-
             if (!coloresSeleccionados) return alert("Selecciona o escribe al menos un color.");
 
             const tallasSeleccionadas = Array.from(document.querySelectorAll('#group-tallas input:checked')).map(cb => cb.value).join(',');
@@ -318,30 +316,33 @@
             btn.disabled = true;
 
             try {
-                let urlImagen = imagenUrlActual;
+                let url1 = url1Actual;
+                let url2 = url2Actual;
+                let url3 = url3Actual;
 
-                if (imagenFile) {
-                    btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Subiendo...';
-                    const imagenComprimida = await comprimirImagen(imagenFile, 800, 0.7);
-                    const formData = new FormData();
-                    formData.append('image', imagenComprimida);
-                    const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
-                    const resJson = await resp.json();
-                    if (!resJson.success) throw new Error(resJson.error ? resJson.error.message : 'ImgBB rechazó la imagen.');
-                    urlImagen = resJson.data.url;
+                async function subirFoto(file) {
+                    if (!file) return null;
+                    const comp = await comprimirImagen(file, 800, 0.7);
+                    const fd = new FormData();
+                    fd.append('image', comp);
+                    const r = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: fd });
+                    const j = await r.json();
+                    return j.success ? j.data.url : null;
                 }
 
-                if (!urlImagen) throw new Error('Debes seleccionar una imagen.');
+                if (file1) url1 = await subirFoto(file1);
+                if (file2) url2 = await subirFoto(file2);
+                if (file3) url3 = await subirFoto(file3);
+
+                if (!url1) throw new Error('La imagen principal es obligatoria.');
+
+                // Guardar URLs separadas por coma
+                const imagenString = [url1, url2, url3].filter(u => u).join(',');
 
                 const dataToSend = { 
-                    id: id || null, 
-                    nombre, 
-                    precio, 
-                    descripcion, // Enviar descripción
-                    imagen: urlImagen, 
-                    tallas: tallasSeleccionadas, 
-                    color: coloresSeleccionados, 
-                    tela: "Personalizada" 
+                    id: id || null, nombre, precio, descripcion,
+                    imagen: imagenString, 
+                    tallas: tallasSeleccionadas, color: coloresSeleccionados, tela: "Personalizada" 
                 };
 
                 btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
@@ -351,7 +352,6 @@
                     iframe.name = 'hidden_iframe'; iframe.id = 'hidden_iframe'; iframe.style.display = 'none';
                     document.body.appendChild(iframe);
                 }
-                
                 const form = document.createElement('form');
                 form.method = 'POST'; form.action = GOOGLE_SHEETS_API; form.target = 'hidden_iframe';
                 const input = document.createElement('input');
@@ -388,8 +388,8 @@
                         ctx.drawImage(img, 0, 0, width, height);
                         canvas.toBlob((blob) => {
                             if (blob) {
-                                const compressedFile = new File([blob], "foto_comprimida.jpg", { type: "image/jpeg", lastModified: Date.now() });
-                                resolve(compressedFile);
+                                const f = new File([blob], "foto.jpg", { type: "image/jpeg", lastModified: Date.now() });
+                                resolve(f);
                             } else { reject(new Error("Error al comprimir")); }
                         }, 'image/jpeg', quality);
                     };

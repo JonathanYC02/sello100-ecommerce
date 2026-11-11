@@ -84,18 +84,24 @@
         </div>
     </section>
 
-    <!-- MODAL DE VISTA RÁPIDA (CORREGIDO CON qv-desc) -->
+    <!-- MODAL DE VISTA RÁPIDA CON CARRUSEL -->
     <div class="quickview-modal" id="quickview-modal">
         <div class="quickview-content">
             <span class="close-quickview" id="close-quickview">&times;</span>
             <div class="quickview-grid">
-                <div class="quickview-img-container">
-                    <img id="qv-image" src="" alt="Producto">
+                <div class="quickview-gallery">
+                    <!-- Carrusel de imágenes -->
+                    <div class="carousel-container">
+                        <img id="qv-image" src="" alt="Producto" class="carousel-main-img">
+                        <button class="carousel-btn prev" onclick="moveCarousel(-1)">&#10094;</button>
+                        <button class="carousel-btn next" onclick="moveCarousel(1)">&#10095;</button>
+                    </div>
+                    <div class="carousel-dots" id="carousel-dots"></div>
                 </div>
                 <div class="quickview-details">
                     <h2 id="qv-title" class="gold-text">Nombre</h2>
                     <p id="qv-price" class="quickview-price">$0.00</p>
-                    <p id="qv-desc" class="quickview-desc">Descripción...</p> <!-- AQUÍ ESTÁ EL ID CORREGIDO -->
+                    <p id="qv-desc" class="quickview-desc">Descripción...</p>
                     <div class="selector-group">
                         <label>Talla:</label>
                         <div class="size-options" id="qv-sizes"></div>
@@ -197,4 +203,4 @@
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <script src="js/app-v4.js"></script>
 </body>
-</html> 
+</html>

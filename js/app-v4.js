@@ -9,6 +9,8 @@ let shippingCost = 0;
 let selectedProduct = null;
 let selectedSize = null;
 let selectedColor = null;
+let currentImages = [];
+let currentImageIndex = 0;
 
 // ==========================================
 // 2. SISTEMA DE NOTIFICACIONES (TOASTS)
@@ -45,23 +47,28 @@ window.addEventListener('load', () => {
 });
 
 // ==========================================
-// 4. CARGA DE PRODUCTOS (CON DESCRIPCIÓN)
+// 4. CARGA DE PRODUCTOS (MÚLTIPLES IMÁGENES)
 // ==========================================
 async function cargarProductosDesdeDB() {
     return new Promise((resolve, reject) => {
         const callbackName = 'jsonpCallback_' + Date.now();
         window[callbackName] = (data) => {
             try {
-                productos = data.map(p => ({
-                    id: Number(p.id),
-                    nombre: p.nombre,
-                    precio: Number(p.precio),
-                    descripcion: p.descripcion || 'Camiseta de algodón premium. Diseño exclusivo de Sello 100. Tela suave, resistente y con un ajuste perfecto.',
-                    imagen: p.imagen,
-                    tallas: p.tallas ? p.tallas.split(',') : [],
-                    color: p.color || 'Negro, Blanco',
-                    tela: p.tela
-                }));
+                productos = data.map(p => {
+                    // Separar las imágenes por coma
+                    const imagenes = p.imagen ? p.imagen.split(',').map(url => url.trim()).filter(url => url !== '') : [];
+                    return {
+                        id: Number(p.id),
+                        nombre: p.nombre,
+                        precio: Number(p.precio),
+                        descripcion: p.descripcion || 'Camiseta de algodón premium. Diseño exclusivo de Sello 100.',
+                        imagen: imagenes[0] || '', // La primera imagen es la principal para el index
+                        galeria: imagenes, // Array de todas las imágenes
+                        tallas: p.tallas ? p.tallas.split(',') : [],
+                        color: p.color || 'Negro, Blanco',
+                        tela: p.tela
+                    };
+                });
                 renderProducts(productos);
                 resolve();
             } catch (error) { reject(error); } 
@@ -119,7 +126,7 @@ function aplicarFiltros(termino, categoria) {
 }
 
 // ==========================================
-// 6. VISTA RÁPIDA (CON DESCRIPCIÓN Y SIN FILTRO FEO)
+// 6. VISTA RÁPIDA CON CARRUSEL
 // ==========================================
 function openQuickview(id) {
     const prod = productos.find(p => p.id === id);
@@ -128,16 +135,19 @@ function openQuickview(id) {
     selectedProduct = prod;
     selectedSize = null;
     selectedColor = null;
-        // Resetear el texto del color
-    const colorTextElement = document.getElementById('color-seleccionado');
-    if (colorTextElement) {
-        colorTextElement.innerText = '(Elige uno)';
-    }
+    currentImages = prod.galeria || [prod.imagen];
+    currentImageIndex = 0;
 
-    document.getElementById('qv-image').src = prod.imagen;
     document.getElementById('qv-title').innerText = prod.nombre;
     document.getElementById('qv-price').innerText = `$${prod.precio.toFixed(2)}`;
-    document.getElementById('qv-desc').innerText = prod.descripcion; // Mostrar descripción
+    document.getElementById('qv-desc').innerText = prod.descripcion;
+
+    // Resetear texto del color
+    const colorTextElement = document.getElementById('color-seleccionado');
+    if (colorTextElement) colorTextElement.innerText = '(Elige uno)';
+
+    // Configurar Carrusel
+    updateCarousel();
 
     const sizesContainer = document.getElementById('qv-sizes');
     sizesContainer.innerHTML = '';
@@ -167,23 +177,60 @@ function openQuickview(id) {
         btn.style.backgroundColor = bgColor;
         btn.title = color.trim();
         
-                btn.onclick = () => {
+        btn.onclick = () => {
             selectedColor = color.trim();
             document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             if(color.toLowerCase().includes('blanco')) btn.style.border = '2px solid var(--gold-primary)';
             
-            // ACTUALIZAR EL TEXTO DEL COLOR SELECCIONADO
-            const colorTextElement = document.getElementById('color-seleccionado');
-            if (colorTextElement) {
-                colorTextElement.innerText = `(${color.trim()})`;
-            }
+            // Actualizar texto del color
+            if (colorTextElement) colorTextElement.innerText = `(${color.trim()})`;
         };
         
         colorsContainer.appendChild(btn);
     });
 
     document.getElementById('quickview-modal').classList.add('active');
+}
+
+// --- LÓGICA DEL CARRUSEL ---
+function updateCarousel() {
+    const imgElement = document.getElementById('qv-image');
+    const dotsContainer = document.getElementById('carousel-dots');
+    
+    if (currentImages.length > 0) {
+        imgElement.src = currentImages[currentImageIndex];
+    }
+
+    // Crear puntos indicadores
+    dotsContainer.innerHTML = '';
+    if (currentImages.length > 1) {
+        currentImages.forEach((_, index) => {
+            const dot = document.createElement('span');
+            dot.className = `carousel-dot ${index === currentImageIndex ? 'active' : ''}`;
+            dot.onclick = () => { currentImageIndex = index; updateCarousel(); };
+            dotsContainer.appendChild(dot);
+        });
+    }
+
+    // Ocultar flechas si solo hay una imagen
+    const prevBtn = document.querySelector('.carousel-btn.prev');
+    const nextBtn = document.querySelector('.carousel-btn.next');
+    if (currentImages.length <= 1) {
+        if(prevBtn) prevBtn.style.display = 'none';
+        if(nextBtn) nextBtn.style.display = 'none';
+    } else {
+        if(prevBtn) prevBtn.style.display = 'flex';
+        if(nextBtn) nextBtn.style.display = 'flex';
+    }
+}
+
+function moveCarousel(direction) {
+    if (currentImages.length <= 1) return;
+    currentImageIndex += direction;
+    if (currentImageIndex >= currentImages.length) currentImageIndex = 0;
+    if (currentImageIndex < 0) currentImageIndex = currentImages.length - 1;
+    updateCarousel();
 }
 
 document.getElementById('close-quickview')?.addEventListener('click', () => document.getElementById('quickview-modal').classList.remove('active'));
@@ -305,7 +352,7 @@ const closeCheckout = document.getElementById('close-checkout');
 if (cartBtn) {
     cartBtn.addEventListener('click', () => { 
         cartModal.classList.add('active'); 
-        document.body.classList.add('cart-open'); // Ocultar botones flotantes
+        document.body.classList.add('cart-open');
         updateCartUI(); 
         initMap(); 
     });
@@ -313,7 +360,7 @@ if (cartBtn) {
 if (closeCart) {
     closeCart.addEventListener('click', () => {
         cartModal.classList.remove('active');
-        document.body.classList.remove('cart-open'); // Mostrar botones flotantes
+        document.body.classList.remove('cart-open');
     });
 }
 if (closeCheckout) {
@@ -329,7 +376,7 @@ function abrirCheckout() {
     document.getElementById('total-checkout').innerText = (cart.reduce((a, b) => a + b.precio, 0) + shippingCost).toFixed(2);
     cartModal.classList.remove('active');
     checkoutModal.classList.add('active');
-    document.body.classList.add('cart-open'); // Mantener ocultos
+    document.body.classList.add('cart-open');
 }
 
 const fileInput = document.getElementById('comprobante');
