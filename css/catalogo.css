@@ -1,58 +1,60 @@
 /* =========================================
-   ESTILOS DEL CATÁLOGO Y TARJETAS DE PRODUCTO
+   ESTILOS DE LAS TARJETAS DE PRODUCTO
    ========================================= */
-
-/* 1. Cuadrícula de productos */
-#products-grid {
-    display: grid !important;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
-    gap: 2rem !important;
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2rem;
     width: 100%;
-    padding: 1rem 0;
 }
 
-/* 2. Tarjeta individual */
 .product-card {
-    background: var(--bg-card) !important;
-    border: 1px solid rgba(212, 175, 55, 0.2) !important;
-    border-radius: 12px !important;
-    padding: 1.5rem !important;
-    display: flex !important;
-    flex-direction: column !important;
+    background: var(--bg-card);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
-    
-    /* Estado inicial para la animación de scroll */
-    opacity: 0; 
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Estado inicial para animación */
+    opacity: 0;
     transform: translateY(30px);
 }
 
-/* Clase que activa el JavaScript cuando la tarjeta entra en pantalla */
 .product-card.show {
     opacity: 1;
     transform: translateY(0);
 }
 
-/* 3. Contenedor de la imagen */
+.product-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--gold-primary);
+    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.15);
+}
+
+/* Contenedor de la imagen */
 .product-img-container {
-    width: 100% !important;
-    height: 300px !important; /* Altura fija para uniformidad */
-    overflow: hidden !important;
-    border-radius: 8px !important;
-    margin-bottom: 1.2rem !important;
-    background-color: #111 !important; /* Fondo oscuro por si la imagen tarda en cargar */
+    width: 100%;
+    height: 280px; /* Altura fija para uniformidad */
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 1.2rem;
+    background-color: #111;
 }
 
-/* 4. La imagen en sí */
 .product-img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important; /* Recorta la imagen para que llene el espacio sin deformarse */
-    display: block !important;
-    transition: transform 0.4s ease !important;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Recorta la imagen sin deformarla */
+    display: block;
+    transition: transform 0.4s ease;
 }
 
-/* 5. Textos de la tarjeta */
+.product-card:hover .product-img {
+    transform: scale(1.05);
+}
+
 .product-title {
     font-family: var(--font-title);
     font-size: 1.1rem;
@@ -65,10 +67,9 @@
     font-size: 1.2rem;
     font-weight: 700;
     margin-bottom: 1.2rem;
-    margin-top: auto !important; /* Empuja el precio hacia abajo si el título es corto */
+    margin-top: auto;
 }
 
-/* 6. Botón de añadir al carrito */
 .btn-add-cart {
     background: transparent;
     border: 1px solid var(--gold-primary);
@@ -90,13 +91,13 @@
     box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
 }
 
-/* 7. Efectos Hover (Al pasar el mouse) */
-.product-card:hover {
-    transform: translateY(-5px) !important;
-    border-color: var(--gold-primary) !important;
-    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.15) !important;
-}
-
-.product-card:hover .product-img {
-    transform: scale(1.05) !important;
+/* Ajuste para celulares */
+@media (max-width: 768px) {
+    .products-grid {
+        grid-template-columns: 1fr; /* Una sola columna en celular */
+        gap: 1.5rem;
+    }
+    .product-img-container {
+        height: 250px; /* Un poco más baja en celular */
+    }
 }

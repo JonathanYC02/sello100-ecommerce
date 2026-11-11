@@ -1,8 +1,10 @@
+/* =========================================
+   VARIABLES GLOBALES Y RESET
+   ========================================= */
 :root {
-    /* Paleta basada en tu logo */
-    --bg-color: #0a0a0c; /* Negro profundo */
+    --bg-color: #0a0a0c;
     --bg-card: rgba(20, 20, 25, 0.7);
-    --gold-primary: #d4af37; /* Dorado del logo */
+    --gold-primary: #d4af37;
     --gold-light: #f9d976;
     --gold-dark: #b8860b;
     --text-main: #e0e0e0;
@@ -101,18 +103,18 @@ body {
 
 /* Hero */
 .hero {
-    min-height: 100vh;
+    min-height: 80vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 0 2rem;
+    padding: 120px 2rem 2rem;
 }
 
 .hero-title {
     font-family: var(--font-title);
-    font-size: clamp(3rem, 8vw, 6rem);
+    font-size: clamp(2.5rem, 8vw, 6rem);
     font-weight: 900;
     margin-bottom: 1rem;
     line-height: 1.1;
@@ -133,7 +135,7 @@ body {
     line-height: 1.6;
 }
 
-/* Botón Dorado Futurista */
+/* Botones */
 .btn-gold {
     display: inline-block;
     padding: 1rem 2.5rem;
@@ -165,7 +167,9 @@ body {
     margin-bottom: 3rem;
 }
 
-/* Modal Carrito */
+/* =========================================
+   MODALES (CARRITO Y CHECKOUT)
+   ========================================= */
 .cart-modal {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -185,313 +189,100 @@ body {
     width: 90%;
     max-width: 500px;
     position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 .close-cart { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: var(--gold-primary);}
 .btn-full { width: 100%; margin-top: 1rem; }
+
 /* =========================================
-   ANIMACIONES DE SCROLL Y EFECTOS PRO
+   ANIMACIONES DE SCROLL
    ========================================= */
-
-/* Estado inicial: Ocultos y desplazados */
-.reveal-up {
-    opacity: 0;
-    transform: translateY(50px);
-    transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
-}
-.reveal-left {
-    opacity: 0;
-    transform: translateX(-50px);
-    transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
-}
-.reveal-right {
-    opacity: 0;
-    transform: translateX(50px);
-    transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
-}
-
-/* Estado final: Visibles y en su lugar */
-.reveal-up.active,
-.reveal-left.active,
-.reveal-right.active {
-    opacity: 1;
-    transform: translate(0, 0);
-}
-
-/* Efecto de retraso para que aparezcan en cascada */
+.reveal-up { opacity: 0; transform: translateY(50px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
+.reveal-left { opacity: 0; transform: translateX(-50px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
+.reveal-right { opacity: 0; transform: translateX(50px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
+.reveal-up.active, .reveal-left.active, .reveal-right.active { opacity: 1; transform: translate(0, 0); }
 .delay-1 { transition-delay: 0.1s; }
 .delay-2 { transition-delay: 0.2s; }
 .delay-3 { transition-delay: 0.3s; }
 
-/* Efecto de brillo en el botón dorado (Shine) */
-.btn-gold {
-    position: relative;
-    overflow: hidden;
-}
+.btn-gold { position: relative; overflow: hidden; }
 .btn-gold::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: -100%;
-    width: 50%;
-    height: 100%;
+    top: 0; left: -100%; width: 50%; height: 100%;
     background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
     transform: skewX(-25deg);
     animation: shine 3s infinite;
 }
-
-@keyframes shine {
-    0% { left: -100%; }
-    20% { left: 200%; }
-    100% { left: 200%; }
-}
-
-/* Animación flotante para el logo o elementos del Hero */
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
-}
-
-/* Efecto Parallax en el Hero (para celular y compu) */
-.hero {
-    position: relative;
-    overflow: hidden;
-}
-.hero-content {
-    transition: transform 0.1s ease-out;
-    will-change: transform;
-}
-
-/* Estilos del Checkout */
-input[type="file"]::file-selector-button {
-    background: var(--gold-primary);
-    color: #000;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    margin-right: 10px;
-}
+@keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
 
 /* =========================================
-   DISEÑO RESPONSIVO (Móviles y Tablets)
+   PIE DE PÁGINA (FOOTER) Y WHATSAPP
+   ========================================= */
+.site-footer { background: #050505; border-top: 1px solid rgba(212, 175, 55, 0.2); padding: 4rem 2rem 2rem; margin-top: 4rem; }
+.footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-bottom: 3rem; }
+.footer-brand h3 { font-family: var(--font-title); color: var(--gold-primary); font-size: 1.5rem; letter-spacing: 2px; margin-bottom: 1rem; }
+.footer-brand p { color: var(--text-muted); line-height: 1.6; }
+.footer-social h4, .footer-links h4 { color: #fff; font-family: var(--font-title); margin-bottom: 1.5rem; font-size: 1rem; letter-spacing: 1px; }
+.footer-social a { color: var(--gold-primary); font-size: 1.8rem; margin-right: 15px; transition: all 0.3s; }
+.footer-social a:hover { color: #fff; transform: translateY(-3px); display: inline-block; }
+.footer-links ul { list-style: none; }
+.footer-links ul li { margin-bottom: 0.8rem; }
+.footer-links ul li a { color: var(--text-muted); text-decoration: none; transition: color 0.3s; }
+.footer-links ul li a:hover { color: var(--gold-primary); }
+.footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.05); color: #666; font-size: 0.85rem; }
+
+.whatsapp-float { position: fixed; width: 60px; height: 60px; bottom: 30px; right: 30px; background-color: #25d366; color: #FFF; border-radius: 50px; text-align: center; font-size: 35px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; animation: pulse-wa 2s infinite; }
+.whatsapp-float:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6); color: #FFF; }
+@keyframes pulse-wa { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
+
+
+/* =========================================
+   📱 DISEÑO RESPONSIVO (CELULARES Y TABLETS)
    ========================================= */
 @media (max-width: 768px) {
-    /* 1. Ajustar la barra de navegación */
+    /* Navbar en móvil */
     .navbar {
         padding: 1rem 1.5rem;
-        flex-wrap: wrap; /* Permite que los elementos bajen si no caben */
-        gap: 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
     }
-
-    .logo-text {
-        font-size: 1rem; /* Logo un poco más pequeño */
-    }
-
+    .logo-text { font-size: 1rem; }
     .nav-links {
-        gap: 1rem; /* Menos espacio entre enlaces */
-        font-size: 0.85rem; /* Letra más pequeña */
-        order: 3; /* Pone los enlaces abajo del logo */
+        gap: 1rem;
+        font-size: 0.85rem;
+        order: 3;
         width: 100%;
         justify-content: center;
+        padding-top: 10px;
+        border-top: 1px solid rgba(212, 175, 55, 0.1);
+        margin-top: 5px;
     }
 
-    /* 2. Ajustar el Hero (El texto principal) */
-    .hero {
-        padding: 0 1.5rem;
-    }
+    /* Hero */
+    .hero { padding-top: 140px; }
+    .hero-title { font-size: 2.8rem; }
+    .hero-subtitle { font-size: 1rem; padding: 0 1rem; }
 
-    .hero-title {
-        font-size: 2.8rem; /* Título más pequeño para que no se corte */
-    }
+    /* Títulos de sección */
+    .section-title { font-size: 2rem; margin-bottom: 2rem; }
 
-    .hero-subtitle {
-        font-size: 1rem;
-    }
+    /* Catálogo */
+    .catalog-section { padding: 2rem 1.5rem; }
 
-    /* 3. Hacer el botón un poco más pequeño para que quepa bien */
-    .btn-gold {
-        padding: 0.8rem 1.5rem;
-        font-size: 0.8rem;
-        width: 100%; /* En móvil, el botón ocupa todo el ancho disponible */
-        text-align: center;
-    }
+    /* Sección Conócenos */
+    .about-section { padding: 3rem 1.5rem; }
+    .about-container { grid-template-columns: 1fr; gap: 2rem; }
+    .about-text p { font-size: 1rem; }
+    .about-image { order: -1; } /* La imagen va primero en el móvil */
 
-    /* 4. Ajustar el carrito y checkout en móvil */
-    .cart-content {
-        width: 95%;
-        padding: 1.5rem;
-    }
-
-    #map {
-        height: 150px; /* Mapa un poco más pequeño en celular */
-    }
-}
-/* =========================================
-   BOTÓN FLOTANTE DE WHATSAPP
-   ========================================= */
-.whatsapp-float {
-    position: fixed;
-    width: 60px;
-    height: 60px;
-    bottom: 30px;
-    right: 30px;
-    background-color: #25d366;
-    color: #FFF;
-    border-radius: 50px;
-    text-align: center;
-    font-size: 35px;
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    animation: pulse-wa 2s infinite;
-}
-
-.whatsapp-float:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
-    color: #FFF;
-}
-
-@keyframes pulse-wa {
-    0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
-    70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-}
-
-/* =========================================
-   FOOTER (PIE DE PÁGINA)
-   ========================================= */
-.site-footer {
-    background: #050505;
-    border-top: 1px solid rgba(212, 175, 55, 0.2);
-    padding: 4rem 2rem 2rem;
-    margin-top: 4rem;
-}
-
-.footer-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 3rem;
-    margin-bottom: 3rem;
-}
-
-.footer-brand h3 {
-    font-family: var(--font-title);
-    color: var(--gold-primary);
-    font-size: 1.5rem;
-    letter-spacing: 2px;
-    margin-bottom: 1rem;
-}
-
-.footer-brand p {
-    color: var(--text-muted);
-    line-height: 1.6;
-}
-
-.footer-social h4, .footer-links h4 {
-    color: #fff;
-    font-family: var(--font-title);
-    margin-bottom: 1.5rem;
-    font-size: 1rem;
-    letter-spacing: 1px;
-}
-
-.footer-social a {
-    color: var(--gold-primary);
-    font-size: 1.8rem;
-    margin-right: 15px;
-    transition: all 0.3s;
-}
-
-.footer-social a:hover {
-    color: #fff;
-    transform: translateY(-3px);
-    display: inline-block;
-}
-
-.footer-links ul {
-    list-style: none;
-}
-
-.footer-links ul li {
-    margin-bottom: 0.8rem;
-}
-
-.footer-links ul li a {
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.footer-links ul li a:hover {
-    color: var(--gold-primary);
-}
-
-.footer-bottom {
-    text-align: center;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    color: #666;
-    font-size: 0.85rem;
-}
-
-/* =========================================
-   SECCIÓN DE ENVÍOS
-   ========================================= */
-.shipping-info {
-    padding: 5rem 4rem;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.shipping-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 3rem;
-}
-
-.shipping-card {
-    background: var(--bg-card);
-    border: 1px solid rgba(212, 175, 55, 0.15);
-    border-radius: 16px;
-    padding: 2.5rem;
-    text-align: center;
-    transition: all 0.3s;
-}
-
-.shipping-card:hover {
-    border-color: var(--gold-primary);
-    transform: translateY(-5px);
-}
-
-.shipping-card i {
-    font-size: 2.5rem;
-    color: var(--gold-primary);
-    margin-bottom: 1.5rem;
-}
-
-.shipping-card h3 {
-    font-family: var(--font-title);
-    color: #fff;
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-}
-
-.shipping-card p {
-    color: var(--text-muted);
-    line-height: 1.6;
-}
-
-/* Ajuste para móviles */
-@media (max-width: 768px) {
+    /* Sección Envíos */
     .shipping-info { padding: 3rem 1.5rem; }
+    
+    /* Modales */
+    .cart-content { padding: 1.5rem; width: 95%; }
+    
+    /* Botón WhatsApp */
     .whatsapp-float { width: 50px; height: 50px; font-size: 28px; bottom: 20px; right: 20px; }
 }
