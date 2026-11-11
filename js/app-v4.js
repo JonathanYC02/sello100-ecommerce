@@ -128,6 +128,11 @@ function openQuickview(id) {
     selectedProduct = prod;
     selectedSize = null;
     selectedColor = null;
+        // Resetear el texto del color
+    const colorTextElement = document.getElementById('color-seleccionado');
+    if (colorTextElement) {
+        colorTextElement.innerText = '(Elige uno)';
+    }
 
     document.getElementById('qv-image').src = prod.imagen;
     document.getElementById('qv-title').innerText = prod.nombre;
@@ -162,11 +167,17 @@ function openQuickview(id) {
         btn.style.backgroundColor = bgColor;
         btn.title = color.trim();
         
-        btn.onclick = () => {
+                btn.onclick = () => {
             selectedColor = color.trim();
             document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             if(color.toLowerCase().includes('blanco')) btn.style.border = '2px solid var(--gold-primary)';
+            
+            // ACTUALIZAR EL TEXTO DEL COLOR SELECCIONADO
+            const colorTextElement = document.getElementById('color-seleccionado');
+            if (colorTextElement) {
+                colorTextElement.innerText = `(${color.trim()})`;
+            }
         };
         
         colorsContainer.appendChild(btn);
