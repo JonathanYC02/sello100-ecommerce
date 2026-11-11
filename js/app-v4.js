@@ -20,26 +20,17 @@ function mostrarToast(mensaje, tipo = 'info') {
         container.id = 'toast-container';
         document.body.appendChild(container);
     }
-
     const toast = document.createElement('div');
     toast.className = `toast ${tipo}`;
-    
     let icono = 'fa-circle-info';
     if (tipo === 'success') icono = 'fa-circle-check';
     if (tipo === 'error') icono = 'fa-circle-exclamation';
-
     toast.innerHTML = `<i class="fa-solid ${icono}"></i> <span>${mensaje}</span>`;
     container.appendChild(toast);
-
     setTimeout(() => toast.classList.add('show'), 100);
-
     setTimeout(() => {
         toast.classList.remove('show');
-        setTimeout(() => {
-            if (container.contains(toast)) {
-                container.removeChild(toast);
-            }
-        }, 400);
+        setTimeout(() => { if (container.contains(toast)) container.removeChild(toast); }, 400);
     }, 3500);
 }
 
@@ -49,42 +40,33 @@ function mostrarToast(mensaje, tipo = 'info') {
 window.addEventListener('load', () => {
     const preloader = document.getElementById('preloader');
     if (preloader) {
-        setTimeout(() => {
-            preloader.classList.add('hidden');
-            setTimeout(() => preloader.remove(), 800);
-        }, 1000);
+        setTimeout(() => { preloader.classList.add('hidden'); setTimeout(() => preloader.remove(), 800); }, 1000);
     }
 });
 
 // ==========================================
-// 4. CARGA DE PRODUCTOS
+// 4. CARGA DE PRODUCTOS (CON DESCRIPCIÓN)
 // ==========================================
 async function cargarProductosDesdeDB() {
     return new Promise((resolve, reject) => {
         const callbackName = 'jsonpCallback_' + Date.now();
-        
         window[callbackName] = (data) => {
             try {
                 productos = data.map(p => ({
                     id: Number(p.id),
                     nombre: p.nombre,
                     precio: Number(p.precio),
+                    descripcion: p.descripcion || 'Camiseta de algodón premium. Diseño exclusivo de Sello 100. Tela suave, resistente y con un ajuste perfecto.', // Descripción por defecto si no hay
                     imagen: p.imagen,
                     tallas: p.tallas ? p.tallas.split(',') : [],
                     color: p.color || 'Negro, Blanco',
                     tela: p.tela
                 }));
-                
                 renderProducts(productos);
                 resolve();
-            } catch (error) {
-                reject(error);
-            } finally {
-                document.body.removeChild(script);
-                delete window[callbackName];
-            }
+            } catch (error) { reject(error); } 
+            finally { document.body.removeChild(script); delete window[callbackName]; }
         };
-
         const script = document.createElement('script');
         script.src = `${GOOGLE_SHEETS_API}?callback=${callbackName}`;
         script.onerror = () => reject(new Error('Error cargando Google Sheets'));
@@ -92,7 +74,7 @@ async function cargarProductosDesdeDB() {
     }).catch(error => {
         console.error('Error cargando productos:', error);
         const grid = document.getElementById('products-grid');
-        if (grid) grid.innerHTML = `<p style="text-align:center; color:#ff4444; grid-column: 1/-1;">Error al cargar productos. Revisa tu conexión.</p>`;
+        if (grid) grid.innerHTML = `<p style="text-align:center; color:#ff4444; grid-column: 1/-1;">Error al cargar productos.</p>`;
     });
 }
 
@@ -102,7 +84,6 @@ async function cargarProductosDesdeDB() {
 function renderProducts(listaProductos) {
     const productsGrid = document.getElementById('products-grid');
     if (!productsGrid) return; 
-    
     productsGrid.innerHTML = '';
     
     if(listaProductos.length === 0) {
@@ -127,38 +108,18 @@ function renderProducts(listaProductos) {
 const searchInput = document.getElementById('search-input');
 const filterSelect = document.getElementById('filter-select');
 
-if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase();
-        const filtroCategoria = filterSelect.value;
-        aplicarFiltros(term, filtroCategoria);
-    });
-}
-
-if (filterSelect) {
-    filterSelect.addEventListener('change', (e) => {
-        const term = searchInput.value.toLowerCase();
-        const filtroCategoria = e.target.value;
-        aplicarFiltros(term, filtroCategoria);
-    });
-}
+if (searchInput) searchInput.addEventListener('input', (e) => aplicarFiltros(e.target.value.toLowerCase(), filterSelect.value));
+if (filterSelect) filterSelect.addEventListener('change', (e) => aplicarFiltros(searchInput.value.toLowerCase(), e.target.value));
 
 function aplicarFiltros(termino, categoria) {
     let filtrados = productos;
-    
-    if (termino) {
-        filtrados = filtrados.filter(p => p.nombre.toLowerCase().includes(termino));
-    }
-    
-    if (categoria !== 'todos') {
-        filtrados = filtrados.filter(p => p.nombre.toLowerCase().includes(categoria));
-    }
-    
+    if (termino) filtrados = filtrados.filter(p => p.nombre.toLowerCase().includes(termino));
+    if (categoria !== 'todos') filtrados = filtrados.filter(p => p.nombre.toLowerCase().includes(categoria));
     renderProducts(filtrados);
 }
 
 // ==========================================
-// 6. VISTA RÁPIDA (CON FILTRO DE COLOR)
+// 6. VISTA RÁPIDA (SIN FILTRO DE COLOR FEO)
 // ==========================================
 function openQuickview(id) {
     const prod = productos.find(p => p.id === id);
@@ -168,12 +129,10 @@ function openQuickview(id) {
     selectedSize = null;
     selectedColor = null;
 
-    const imgElement = document.getElementById('qv-image');
-    imgElement.src = prod.imagen;
-    imgElement.style.filter = 'none'; // Resetear filtro al abrir
-
+    document.getElementById('qv-image').src = prod.imagen;
     document.getElementById('qv-title').innerText = prod.nombre;
     document.getElementById('qv-price').innerText = `$${prod.precio.toFixed(2)}`;
+    document.getElementById('qv-desc').innerText = prod.descripcion; // Mostrar descripción
 
     const sizesContainer = document.getElementById('qv-sizes');
     sizesContainer.innerHTML = '';
@@ -181,11 +140,7 @@ function openQuickview(id) {
         const btn = document.createElement('button');
         btn.className = 'size-btn';
         btn.innerText = talla.trim();
-        btn.onclick = () => {
-            selectedSize = talla.trim();
-            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        };
+        btn.onclick = () => { selectedSize = talla.trim(); document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); };
         sizesContainer.appendChild(btn);
     });
 
@@ -196,7 +151,6 @@ function openQuickview(id) {
     colores.forEach(color => {
         const btn = document.createElement('button');
         btn.className = 'color-btn';
-        
         let bgColor = '#000';
         if(color.toLowerCase().includes('blanco')) bgColor = '#fff';
         if(color.toLowerCase().includes('gris')) bgColor = '#888';
@@ -213,23 +167,7 @@ function openQuickview(id) {
             document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             if(color.toLowerCase().includes('blanco')) btn.style.border = '2px solid var(--gold-primary)';
-            
-            // Aplicar filtro visual a la imagen según el color elegido
-            if (color.toLowerCase().includes('rojo')) {
-                imgElement.style.filter = 'sepia(1) saturate(5) hue-rotate(-50deg)';
-            } else if (color.toLowerCase().includes('azul')) {
-                imgElement.style.filter = 'sepia(1) saturate(5) hue-rotate(180deg)';
-            } else if (color.toLowerCase().includes('verde')) {
-                imgElement.style.filter = 'sepia(1) saturate(5) hue-rotate(90deg)';
-            } else if (color.toLowerCase().includes('gris')) {
-                imgElement.style.filter = 'grayscale(100%)';
-            } else if (color.toLowerCase().includes('negro')) {
-                imgElement.style.filter = 'brightness(0.5)';
-            } else if (color.toLowerCase().includes('beige')) {
-                imgElement.style.filter = 'sepia(0.5) saturate(0.8)';
-            } else {
-                imgElement.style.filter = 'none';
-            }
+            // Se eliminó el filtro feo de la imagen
         };
         
         colorsContainer.appendChild(btn);
@@ -238,33 +176,20 @@ function openQuickview(id) {
     document.getElementById('quickview-modal').classList.add('active');
 }
 
-document.getElementById('close-quickview')?.addEventListener('click', () => {
-    document.getElementById('quickview-modal').classList.remove('active');
-});
+document.getElementById('close-quickview')?.addEventListener('click', () => document.getElementById('quickview-modal').classList.remove('active'));
 
 function addToCartFromQuickview() {
     if (!selectedSize) return mostrarToast("Por favor, selecciona una talla.", "error");
     if (!selectedColor) return mostrarToast("Por favor, selecciona un color.", "error");
 
-    const itemToAdd = {
-        ...selectedProduct,
-        tallaElegida: selectedSize,
-        colorElegido: selectedColor,
-        cartId: Date.now()
-    };
-
+    const itemToAdd = { ...selectedProduct, tallaElegida: selectedSize, colorElegido: selectedColor, cartId: Date.now() };
     cart.push(itemToAdd);
     saveCart();
     updateCartUI();
-    
     document.getElementById('quickview-modal').classList.remove('active');
     mostrarToast("Producto añadido al carrito.", "success");
-    
     const cartCount = document.getElementById('cart-count');
-    if (cartCount) {
-        cartCount.style.transform = 'scale(1.5)';
-        setTimeout(() => cartCount.style.transform = 'scale(1)', 200);
-    }
+    if (cartCount) { cartCount.style.transform = 'scale(1.5)'; setTimeout(() => cartCount.style.transform = 'scale(1)', 200); }
 }
 
 // ==========================================
@@ -278,7 +203,6 @@ function updateCartUI() {
 
     const cartItemsContainer = document.getElementById('cart-items');
     if (!cartItemsContainer) return;
-    
     cartItemsContainer.innerHTML = '';
     let subtotal = 0;
 
@@ -298,7 +222,6 @@ function updateCartUI() {
 
     const subtotalElement = document.getElementById('subtotal-price');
     const totalElement = document.getElementById('total-price');
-    
     if (subtotalElement) subtotalElement.innerText = subtotal.toFixed(2);
     if (totalElement) totalElement.innerText = (subtotal + shippingCost).toFixed(2);
 }
@@ -311,42 +234,28 @@ function removeFromCart(index) {
 }
 
 // ==========================================
-// 8. MAPA CON BUSCADOR DE DIRECCIONES
+// 8. MAPA CON BUSCADOR Y CHECKOUT
 // ==========================================
 let map, marker;
 let localCoords = [-2.220962, -79.897079]; 
 
 function initMap() {
     if (map) return; 
-    
     map = L.map('map').setView(localCoords, 13);
     setTimeout(() => { map.invalidateSize(); }, 200);
-    
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
     L.marker(localCoords).addTo(map).bindPopup('<b>SELLO 100</b><br>Origen').openPopup();
 
-    // --- BUSCADOR DE DIRECCIONES (Nominatim) ---
     if (typeof L.Control.geocoder !== 'undefined') {
         L.Control.geocoder({
             defaultMarkGeocode: false,
             placeholder: "Busca tu dirección (ej: Durán)...",
-            geocoder: L.Control.Geocoder.nominatim({
-                geocodingQueryParams: {
-                    countrycodes: 'ec',
-                    limit: 5
-                }
-            })
+            geocoder: L.Control.Geocoder.nominatim({ geocodingQueryParams: { countrycodes: 'ec', limit: 5 } })
         })
         .on('markgeocode', function(e) {
             const latlng = e.geocode.center;
             map.setView(latlng, 16);
-            
-            if (marker) {
-                marker.setLatLng(latlng);
-            } else {
-                marker = L.marker(latlng, { draggable: true }).addTo(map);
-            }
-            
+            if (marker) { marker.setLatLng(latlng); } else { marker = L.marker(latlng, { draggable: true }).addTo(map); }
             calcularDistancia(localCoords, [latlng.lat, latlng.lng]);
             map.closePopup();
         })
@@ -355,11 +264,7 @@ function initMap() {
 
     map.on('click', function(e) {
         const clientCoords = [e.latlng.lat, e.latlng.lng];
-        if (marker) { 
-            marker.setLatLng(clientCoords); 
-        } else { 
-            marker = L.marker(clientCoords, { draggable: true }).addTo(map); 
-        }
+        if (marker) { marker.setLatLng(clientCoords); } else { marker = L.marker(clientCoords, { draggable: true }).addTo(map); }
         calcularDistancia(localCoords, clientCoords);
     });
 }
@@ -375,42 +280,26 @@ function calcularDistancia(origen, destino) {
     let costoEnvio = 1.50; 
     if (distanciaKm > 2) costoEnvio += (distanciaKm - 2) * 0.50;
 
-    const distElement = document.getElementById('distance-text');
-    const costElement = document.getElementById('shipping-cost');
-    
-    if (distElement) distElement.innerText = `${distanciaKm.toFixed(1)} km`;
-    if (costElement) costElement.innerText = `$${costoEnvio.toFixed(2)}`;
-    
+    document.getElementById('distance-text').innerText = `${distanciaKm.toFixed(1)} km`;
+    document.getElementById('shipping-cost').innerText = `$${costoEnvio.toFixed(2)}`;
     shippingCost = costoEnvio;
     updateCartUI(); 
 }
 
-// ==========================================
-// 9. EVENTOS DE UI (MODALES)
-// ==========================================
 const cartBtn = document.getElementById('cart-btn');
 const cartModal = document.getElementById('cart-modal');
 const closeCart = document.getElementById('close-cart');
 const checkoutModal = document.getElementById('checkout-modal');
 const closeCheckout = document.getElementById('close-checkout');
 
-if (cartBtn) {
-    cartBtn.addEventListener('click', () => { 
-        cartModal.classList.add('active'); 
-        updateCartUI(); 
-        initMap(); 
-    });
-}
+if (cartBtn) cartBtn.addEventListener('click', () => { cartModal.classList.add('active'); updateCartUI(); initMap(); });
 if (closeCart) closeCart.addEventListener('click', () => cartModal.classList.remove('active'));
 if (closeCheckout) closeCheckout.addEventListener('click', () => checkoutModal.classList.remove('active'));
 
 function abrirCheckout() {
     if (cart.length === 0) return mostrarToast("Tu carrito está vacío. Añade productos primero.", "error");
     if (!marker) return mostrarToast("Selecciona tu ubicación en el mapa para calcular el envío.", "error");
-    
-    const totalCheckout = cart.reduce((a, b) => a + b.precio, 0) + shippingCost;
-    document.getElementById('total-checkout').innerText = totalCheckout.toFixed(2);
-    
+    document.getElementById('total-checkout').innerText = (cart.reduce((a, b) => a + b.precio, 0) + shippingCost).toFixed(2);
     cartModal.classList.remove('active');
     checkoutModal.classList.add('active');
 }
@@ -421,10 +310,7 @@ if (fileInput) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = (ev) => { 
-                document.getElementById('image-preview').src = ev.target.result; 
-                document.getElementById('preview-container').style.display = 'block'; 
-            };
+            reader.onload = (ev) => { document.getElementById('image-preview').src = ev.target.result; document.getElementById('preview-container').style.display = 'block'; };
             reader.readAsDataURL(file);
         }
     });
@@ -469,16 +355,12 @@ async function finalizarCompra() {
         window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`, '_blank');
         mostrarToast("Pedido enviado con éxito.", "success");
 
-        // Limpiar
-        cart = []; 
-        saveCart(); 
-        updateCartUI();
+        cart = []; saveCart(); updateCartUI();
         checkoutModal.classList.remove('active');
         document.getElementById('nombre-cliente').value = '';
         document.getElementById('cedula-cliente').value = '';
         fileInput.value = '';
         document.getElementById('preview-container').style.display = 'none';
-        
     } catch (error) {
         mostrarToast(`Error: ${error.message}`, "error");
     } finally {
@@ -497,15 +379,8 @@ function copiarTexto(texto) {
 document.addEventListener('DOMContentLoaded', () => {
     cargarProductosDesdeDB();
     updateCartUI();
-    
     const observer = new IntersectionObserver((entries, obs) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) { 
-                entry.target.classList.add('active'); 
-                obs.unobserve(entry.target); 
-            }
-        });
+        entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('active'); obs.unobserve(entry.target); } });
     }, { threshold: 0.1 });
-    
     document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
 });
