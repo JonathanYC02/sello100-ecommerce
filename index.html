@@ -7,29 +7,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-    <!-- PRELOADER (Pantalla de Carga) -->
-    <div id="preloader">
-        <div class="preloader-logo">SELLO 100</div>
-        <div class="preloader-spinner"></div>
-    </div>
-
-    <!-- CONTENEDOR DE NOTIFICACIONES -->
+    <div id="preloader"><div class="preloader-logo">SELLO 100</div><div class="preloader-spinner"></div></div>
     <div id="toast-container"></div>
-
-    <!-- Fondo Animado -->
     <div class="bg-grid"></div>
     <div class="glow-orb orb-gold"></div>
     <div class="glow-orb orb-dark"></div>
 
-    <!-- Botón Admin Flotante -->
-    <a href="page/admin.html" class="admin-float" title="Administrar Catálogo">
-        <i class="fa-solid fa-user-gear"></i><span>Admin</span>
-    </a>
+    <a href="page/admin.html" class="admin-float" title="Administrar Catálogo"><i class="fa-solid fa-user-gear"></i><span>Admin</span></a>
 
-    <!-- Navbar -->
     <nav class="navbar">
         <div class="logo"><span class="logo-text">SELLO 100</span></div>
         <ul class="nav-links">
@@ -37,13 +26,9 @@
             <li><a href="#conocenos">Conócenos</a></li>
             <li><a href="#envios">Envíos</a></li>
         </ul>
-        <div class="cart-icon" id="cart-btn">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <span class="cart-count" id="cart-count">0</span>
-        </div>
+        <div class="cart-icon" id="cart-btn"><i class="fa-solid fa-cart-shopping"></i><span class="cart-count" id="cart-count">0</span></div>
     </nav>
 
-    <!-- Hero Section -->
     <header class="hero">
         <div class="hero-content">
             <h1 class="hero-title reveal-up">VISTE TU <span class="gold-text">FE</span></h1>
@@ -51,11 +36,8 @@
         </div>
     </header>
 
-    <!-- Catálogo de Productos -->
     <section class="catalog-section" id="catalogo">
         <h2 class="section-title reveal-up">Colección <span class="gold-text">Exclusiva</span></h2>
-        
-        <!-- Filtros de Búsqueda -->
         <div class="filtros-container reveal-up">
             <input type="text" id="search-input" placeholder="Buscar camiseta..." class="search-input">
             <select id="filter-select" class="filter-select">
@@ -65,11 +47,9 @@
                 <option value="oversize">Oversize</option>
             </select>
         </div>
-
         <div class="products-grid" id="products-grid"></div>
     </section>
 
-    <!-- SECCIÓN CONÓCENOS -->
     <section class="about-section" id="conocenos">
         <div class="about-container">
             <div class="about-text reveal-left">
@@ -83,7 +63,6 @@
         </div>
     </section>
 
-    <!-- SECCIÓN DE ENVÍOS -->
     <section class="shipping-info" id="envios">
         <h2 class="section-title reveal-up">Información de <span class="gold-text">Envíos</span></h2>
         <div class="shipping-grid">
@@ -105,7 +84,6 @@
         </div>
     </section>
 
-    <!-- MODAL DE VISTA RÁPIDA -->
     <div class="quickview-modal" id="quickview-modal">
         <div class="quickview-content">
             <span class="close-quickview" id="close-quickview">&times;</span>
@@ -117,24 +95,20 @@
                     <h2 id="qv-title" class="gold-text">Nombre</h2>
                     <p id="qv-price" class="quickview-price">$0.00</p>
                     <p class="quickview-desc">Camiseta de algodón premium. Diseño exclusivo de Sello 100. Tela suave, resistente y con un ajuste perfecto.</p>
-                    
                     <div class="selector-group">
                         <label>Talla:</label>
                         <div class="size-options" id="qv-sizes"></div>
                     </div>
-                    
                     <div class="selector-group">
                         <label>Color:</label>
                         <div class="color-options" id="qv-colors"></div>
                     </div>
-                    
                     <button class="btn-gold btn-full" onclick="addToCartFromQuickview()">Añadir al Carrito</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal del Carrito -->
     <div class="cart-modal" id="cart-modal">
         <div class="cart-content">
             <span class="close-cart" id="close-cart">&times;</span>
@@ -142,7 +116,7 @@
             <div id="cart-items" style="margin-bottom: 1rem; max-height: 150px; overflow-y: auto;"></div>
             <div class="shipping-section" style="margin-top: 1rem; border-top: 1px solid rgba(212, 175, 55, 0.2); padding-top: 1rem;">
                 <h3 style="font-size: 1rem; color: var(--gold-primary); margin-bottom: 0.5rem;"><i class="fa-solid fa-location-dot"></i> Ubicación de entrega</h3>
-                <p style="font-size: 0.8rem; color: #888; margin-bottom: 0.5rem;">Haz clic en el mapa para calcular el envío.</p>
+                <p style="font-size: 0.8rem; color: #888; margin-bottom: 0.5rem;">Busca tu dirección o haz clic en el mapa.</p>
                 <div id="map" style="height: 200px; width: 100%; border-radius: 8px; border: 1px solid #333; margin-bottom: 1rem; z-index: 1;"></div>
                 <div id="shipping-result" style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--text-main);">
                     <p>Distancia: <span id="distance-text">-</span></p>
@@ -157,7 +131,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE CHECKOUT -->
     <div class="cart-modal" id="checkout-modal">
         <div class="cart-content" style="max-width: 600px;">
             <span class="close-cart" id="close-checkout">&times;</span>
@@ -193,12 +166,10 @@
         </div>
     </div>
 
-    <!-- Botón WhatsApp -->
     <a href="https://wa.me/593962576433?text=Hola%20Sello%20100,%20tengo%20una%20consulta." target="_blank" class="whatsapp-float" aria-label="Contactar por WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
-    <!-- Footer -->
     <footer class="site-footer">
         <div class="footer-content">
             <div class="footer-brand">
@@ -222,6 +193,7 @@
     </footer>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <script src="js/app-v4.js"></script>
 </body>
 </html>

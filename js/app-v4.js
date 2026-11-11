@@ -31,10 +31,8 @@ function mostrarToast(mensaje, tipo = 'info') {
     toast.innerHTML = `<i class="fa-solid ${icono}"></i> <span>${mensaje}</span>`;
     container.appendChild(toast);
 
-    // Animación de entrada
     setTimeout(() => toast.classList.add('show'), 100);
 
-    // Animación de salida automática
     setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => {
@@ -46,7 +44,7 @@ function mostrarToast(mensaje, tipo = 'info') {
 }
 
 // ==========================================
-// 3. PRELOADER (Pantalla de Carga)
+// 3. PRELOADER
 // ==========================================
 window.addEventListener('load', () => {
     const preloader = document.getElementById('preloader');
@@ -54,12 +52,12 @@ window.addEventListener('load', () => {
         setTimeout(() => {
             preloader.classList.add('hidden');
             setTimeout(() => preloader.remove(), 800);
-        }, 1000); // 1 segundo de carga mínima
+        }, 1000);
     }
 });
 
 // ==========================================
-// 4. CARGA DE PRODUCTOS DESDE GOOGLE SHEETS
+// 4. CARGA DE PRODUCTOS
 // ==========================================
 async function cargarProductosDesdeDB() {
     return new Promise((resolve, reject) => {
@@ -126,7 +124,6 @@ function renderProducts(listaProductos) {
     });
 }
 
-// Filtros de búsqueda
 const searchInput = document.getElementById('search-input');
 const filterSelect = document.getElementById('filter-select');
 
@@ -161,7 +158,7 @@ function aplicarFiltros(termino, categoria) {
 }
 
 // ==========================================
-// 6. VISTA RÁPIDA (QUICKVIEW)
+// 6. VISTA RÁPIDA (CON FILTRO DE COLOR)
 // ==========================================
 function openQuickview(id) {
     const prod = productos.find(p => p.id === id);
@@ -171,11 +168,13 @@ function openQuickview(id) {
     selectedSize = null;
     selectedColor = null;
 
-    document.getElementById('qv-image').src = prod.imagen;
+    const imgElement = document.getElementById('qv-image');
+    imgElement.src = prod.imagen;
+    imgElement.style.filter = 'none'; // Resetear filtro al abrir
+
     document.getElementById('qv-title').innerText = prod.nombre;
     document.getElementById('qv-price').innerText = `$${prod.precio.toFixed(2)}`;
 
-    // Generar botones de talla
     const sizesContainer = document.getElementById('qv-sizes');
     sizesContainer.innerHTML = '';
     prod.tallas.forEach(talla => {
@@ -190,7 +189,6 @@ function openQuickview(id) {
         sizesContainer.appendChild(btn);
     });
 
-    // Generar botones de color
     const colorsContainer = document.getElementById('qv-colors');
     colorsContainer.innerHTML = '';
     const colores = prod.color ? prod.color.split(',') : ['Negro', 'Blanco'];
@@ -204,6 +202,8 @@ function openQuickview(id) {
         if(color.toLowerCase().includes('gris')) bgColor = '#888';
         if(color.toLowerCase().includes('rojo')) bgColor = '#ff0000';
         if(color.toLowerCase().includes('azul')) bgColor = '#0000ff';
+        if(color.toLowerCase().includes('verde')) bgColor = '#008000';
+        if(color.toLowerCase().includes('beige')) bgColor = '#f5f5dc';
         
         btn.style.backgroundColor = bgColor;
         btn.title = color.trim();
@@ -213,6 +213,23 @@ function openQuickview(id) {
             document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             if(color.toLowerCase().includes('blanco')) btn.style.border = '2px solid var(--gold-primary)';
+            
+            // Aplicar filtro visual a la imagen según el color elegido
+            if (color.toLowerCase().includes('rojo')) {
+                imgElement.style.filter = 'sepia(1) saturate(5) hue-rotate(-50deg)';
+            } else if (color.toLowerCase().includes('azul')) {
+                imgElement.style.filter = 'sepia(1) saturate(5) hue-rotate(180deg)';
+            } else if (color.toLowerCase().includes('verde')) {
+                imgElement.style.filter = 'sepia(1) saturate(5) hue-rotate(90deg)';
+            } else if (color.toLowerCase().includes('gris')) {
+                imgElement.style.filter = 'grayscale(100%)';
+            } else if (color.toLowerCase().includes('negro')) {
+                imgElement.style.filter = 'brightness(0.5)';
+            } else if (color.toLowerCase().includes('beige')) {
+                imgElement.style.filter = 'sepia(0.5) saturate(0.8)';
+            } else {
+                imgElement.style.filter = 'none';
+            }
         };
         
         colorsContainer.appendChild(btn);
@@ -243,7 +260,6 @@ function addToCartFromQuickview() {
     document.getElementById('quickview-modal').classList.remove('active');
     mostrarToast("Producto añadido al carrito.", "success");
     
-    // Animación del contador
     const cartCount = document.getElementById('cart-count');
     if (cartCount) {
         cartCount.style.transform = 'scale(1.5)';
@@ -254,9 +270,7 @@ function addToCartFromQuickview() {
 // ==========================================
 // 7. LÓGICA DEL CARRITO
 // ==========================================
-function saveCart() {
-    localStorage.setItem('sello100_cart', JSON.stringify(cart));
-}
+function saveCart() { localStorage.setItem('sello100_cart', JSON.stringify(cart)); }
 
 function updateCartUI() {
     const cartCount = document.getElementById('cart-count');
@@ -297,7 +311,7 @@ function removeFromCart(index) {
 }
 
 // ==========================================
-// 8. MAPA, CHECKOUT Y WHATSAPP
+// 8. MAPA CON BUSCADOR DE DIRECCIONES
 // ==========================================
 let map, marker;
 let localCoords = [-2.220962, -79.897079]; 
@@ -310,6 +324,34 @@ function initMap() {
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
     L.marker(localCoords).addTo(map).bindPopup('<b>SELLO 100</b><br>Origen').openPopup();
+
+    // --- BUSCADOR DE DIRECCIONES (Nominatim) ---
+    if (typeof L.Control.geocoder !== 'undefined') {
+        L.Control.geocoder({
+            defaultMarkGeocode: false,
+            placeholder: "Busca tu dirección (ej: Durán)...",
+            geocoder: L.Control.Geocoder.nominatim({
+                geocodingQueryParams: {
+                    countrycodes: 'ec',
+                    limit: 5
+                }
+            })
+        })
+        .on('markgeocode', function(e) {
+            const latlng = e.geocode.center;
+            map.setView(latlng, 16);
+            
+            if (marker) {
+                marker.setLatLng(latlng);
+            } else {
+                marker = L.marker(latlng, { draggable: true }).addTo(map);
+            }
+            
+            calcularDistancia(localCoords, [latlng.lat, latlng.lng]);
+            map.closePopup();
+        })
+        .addTo(map);
+    }
 
     map.on('click', function(e) {
         const clientCoords = [e.latlng.lat, e.latlng.lng];
@@ -456,7 +498,6 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarProductosDesdeDB();
     updateCartUI();
     
-    // Animaciones de scroll
     const observer = new IntersectionObserver((entries, obs) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) { 
