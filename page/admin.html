@@ -8,45 +8,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/main.css">
     <style>
-        .admin-container {
-            max-width: 1200px;
-            margin: 100px auto 50px;
-            padding: 2rem;
-            background: var(--bg-card);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 16px;
-        }
-        .admin-title {
-            font-family: var(--font-title);
-            color: var(--gold-primary);
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        .admin-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-        @media (max-width: 768px) {
-            .admin-grid { grid-template-columns: 1fr; }
-        }
+        .admin-container { max-width: 1200px; margin: 100px auto 50px; padding: 2rem; background: var(--bg-card); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 16px; }
+        .admin-title { font-family: var(--font-title); color: var(--gold-primary); text-align: center; margin-bottom: 2rem; }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        @media (max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } }
         .admin-form-group { margin-bottom: 1rem; }
         .admin-form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-muted); }
-        .admin-input {
-            width: 100%;
-            padding: 0.8rem;
-            background: #111;
-            border: 1px solid #333;
-            color: white;
-            border-radius: 8px;
-            font-family: var(--font-body);
-        }
+        .admin-input { width: 100%; padding: 0.8rem; background: #111; border: 1px solid #333; color: white; border-radius: 8px; font-family: var(--font-body); }
         .admin-input:focus { outline: none; border-color: var(--gold-primary); }
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         .admin-table th, .admin-table td { padding: 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .admin-table th { color: var(--gold-primary); font-family: var(--font-title); }
         .admin-img-preview { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
         .login-box { max-width: 400px; margin: 150px auto; text-align: center; }
+        .btn-accion { background: none; border: none; cursor: pointer; font-size: 1.1rem; margin: 0 5px; transition: 0.3s; }
+        .btn-editar { color: var(--gold-primary); }
+        .btn-editar:hover { color: #fff; }
+        .btn-eliminar { color: #ff4444; }
+        .btn-eliminar:hover { color: #ff8888; }
     </style>
 </head>
 <body>
@@ -70,9 +49,10 @@
         </div>
 
         <div class="admin-grid">
-            <!-- FORMULARIO NUEVO PRODUCTO -->
+            <!-- FORMULARIO -->
             <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px;">
-                <h3 style="color: white; margin-bottom: 1rem;">Añadir Nuevo Producto</h3>
+                <h3 style="color: white; margin-bottom: 1rem;" id="form-title">Añadir Nuevo Producto</h3>
+                <input type="hidden" id="prod-id">
                 
                 <div class="admin-form-group">
                     <label>Nombre del Producto</label>
@@ -83,55 +63,46 @@
                     <input type="number" id="prod-precio" class="admin-input" step="0.01">
                 </div>
                 <div class="admin-form-group">
-                    <label>Imagen del Producto</label>
+                    <label>Imagen del Producto (Deja vacío para mantener la actual)</label>
                     <input type="file" id="prod-imagen-file" accept="image/*" class="admin-input" style="padding: 0.5rem;">
-                    <small style="color: #888; font-size: 0.8rem; display: block; margin-top: 5px;">Sube una foto desde tu PC (JPG/PNG).</small>
+                    <input type="hidden" id="prod-imagen-url">
                 </div>
                 <div class="admin-form-group">
                     <label>Tallas (separadas por coma)</label>
                     <input type="text" id="prod-tallas" class="admin-input" placeholder="S, M, L, XL">
                 </div>
                 
-                <button class="btn-gold btn-full" style="margin-top: 1rem;" onclick="agregarProducto()" id="btn-guardar">Guardar Producto</button>
+                <button class="btn-gold btn-full" style="margin-top: 1rem;" onclick="guardarProducto()" id="btn-guardar">Guardar Producto</button>
+                <button class="btn-gold btn-full" style="margin-top: 0.5rem; background: transparent; color: #888; border: 1px solid #444;" onclick="cancelarEdicion()" id="btn-cancelar" style="display: none;">Cancelar Edición</button>
             </div>
 
-            <!-- TABLA DE PRODUCTOS -->
+            <!-- TABLA -->
             <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; overflow-x: auto;">
                 <h3 style="color: white; margin-bottom: 1rem;">Productos en Tienda</h3>
-                <table class="admin-table" id="tabla-productos">
+                <table class="admin-table">
                     <thead>
                         <tr>
                             <th>Imagen</th>
                             <th>Nombre</th>
                             <th>Precio</th>
-                            <th>Acción</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="tbody-productos">
-                        <!-- Se inyectan los productos -->
-                    </tbody>
+                    <tbody id="tbody-productos"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <script>
-        // ⚠️ AQUÍ VA LA URL DE TU GOOGLE SHEETS (La misma de app-v4.js)
         const GOOGLE_SHEETS_API = 'https://script.google.com/macros/s/AKfycbyAyFb8r7kqhfY8aLRfhk5vudQHRNrQAxhzgB7TynjUtLZcdcGPSzuBg82aTd-a799F/exec';
-        
-        // ⚠️ PEGA AQUÍ TU API KEY DE IMGBB (Sin las comillas, solo el código)
-        const IMGBB_API_KEY = 'd885018b58fe9232ff84c3cf4ba9ee76'; 
-
-        // Contraseña del admin
+        const IMGBB_API_KEY = 'TU_API_KEY_AQUI'; // ⚠️ PEGA TU API KEY AQUÍ
         const ADMIN_PASSWORD = 'sello100admin';
 
-        if (localStorage.getItem('sello100_admin_logged') === 'true') {
-            mostrarPanel();
-        }
+        if (localStorage.getItem('sello100_admin_logged') === 'true') mostrarPanel();
 
         function login() {
-            const pass = document.getElementById('admin-pass').value;
-            if (pass === ADMIN_PASSWORD) {
+            if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) {
                 localStorage.setItem('sello100_admin_logged', 'true');
                 mostrarPanel();
             } else {
@@ -150,10 +121,8 @@
             cargarProductos();
         }
 
-        // Cargar productos desde Google Sheets (JSONP)
         function cargarProductos() {
             const callbackName = 'adminCallback_' + Date.now();
-            
             window[callbackName] = (data) => {
                 const tbody = document.getElementById('tbody-productos');
                 tbody.innerHTML = '';
@@ -164,7 +133,8 @@
                             <td>${prod.nombre}</td>
                             <td style="color: var(--gold-primary);">$${Number(prod.precio).toFixed(2)}</td>
                             <td>
-                                <button onclick="eliminarProducto(${prod.id})" style="background: none; border: none; color: #ff4444; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>
+                                <button class="btn-accion btn-editar" onclick='prepararEdicion(${JSON.stringify(prod)})' title="Editar"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn-accion btn-eliminar" onclick="eliminarProducto(${prod.id})" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>
                     `;
@@ -172,106 +142,100 @@
                 document.body.removeChild(script);
                 delete window[callbackName];
             };
-
             const script = document.createElement('script');
             script.src = `${GOOGLE_SHEETS_API}?callback=${callbackName}`;
             document.body.appendChild(script);
         }
 
-        // Agregar producto (Sube foto a ImgBB y guarda en Google Sheets)
-        async function agregarProducto() {
+        function prepararEdicion(prod) {
+            document.getElementById('form-title').innerText = "Editar Producto";
+            document.getElementById('prod-id').value = prod.id;
+            document.getElementById('prod-nombre').value = prod.nombre;
+            document.getElementById('prod-precio').value = prod.precio;
+            document.getElementById('prod-tallas').value = prod.tallas;
+            document.getElementById('prod-imagen-url').value = prod.imagen;
+            document.getElementById('prod-imagen-file').value = '';
+            
+            document.getElementById('btn-guardar').innerText = "Actualizar Producto";
+            document.getElementById('btn-cancelar').style.display = 'block';
+        }
+
+        function cancelarEdicion() {
+            document.getElementById('form-title').innerText = "Añadir Nuevo Producto";
+            document.getElementById('prod-id').value = '';
+            document.getElementById('prod-nombre').value = '';
+            document.getElementById('prod-precio').value = '';
+            document.getElementById('prod-tallas').value = '';
+            document.getElementById('prod-imagen-url').value = '';
+            document.getElementById('prod-imagen-file').value = '';
+            
+            document.getElementById('btn-guardar').innerText = "Guardar Producto";
+            document.getElementById('btn-cancelar').style.display = 'none';
+        }
+
+        async function guardarProducto() {
+            const id = document.getElementById('prod-id').value;
             const nombre = document.getElementById('prod-nombre').value;
             const precio = parseFloat(document.getElementById('prod-precio').value);
+            const tallas = document.getElementById('prod-tallas').value;
             const imagenFile = document.getElementById('prod-imagen-file').files[0];
-            const tallasStr = document.getElementById('prod-tallas').value;
-            const btnGuardar = document.getElementById('btn-guardar');
+            const imagenUrlActual = document.getElementById('prod-imagen-url').value;
+            const btn = document.getElementById('btn-guardar');
 
-            if (!nombre || !precio || !imagenFile) {
-                alert("Completa nombre, precio y selecciona una imagen.");
+            if (!nombre || !precio) {
+                alert("Completa nombre y precio.");
                 return;
             }
 
-            if (IMGBB_API_KEY === 'TU_API_KEY_AQUI') {
-                alert("Por favor, configura tu API Key de ImgBB en el código.");
-                return;
-            }
-
-            btnGuardar.innerHTML = 'Subiendo... <i class="fa-solid fa-spinner fa-spin"></i>';
-            btnGuardar.disabled = true;
+            btn.innerHTML = 'Procesando... <i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
 
             try {
-                // 1. Subir imagen a ImgBB
-                const formData = new FormData();
-                formData.append('image', imagenFile);
+                let urlImagen = imagenUrlActual;
 
-                const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                    method: 'POST',
-                    body: formData
-                });
-                const resJson = await resp.json();
-                
-                if (!resJson.success) {
-                    throw new Error('ImgBB falló: ' + (resJson.error ? resJson.error.message : 'Error desconocido'));
+                // Si hay una nueva imagen, la subimos
+                if (imagenFile) {
+                    const formData = new FormData();
+                    formData.append('image', imagenFile);
+                    const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                        method: 'POST', body: formData
+                    });
+                    const resJson = await resp.json();
+                    if (!resJson.success) throw new Error('Error al subir imagen');
+                    urlImagen = resJson.data.url;
                 }
-                
-                const urlImagen = resJson.data.url;
 
-                // 2. Enviar datos a Google Sheets (Formulario oculto para evitar CORS)
-                const dataToSend = {
-                    nombre: nombre,
-                    precio: precio,
-                    imagen: urlImagen,
-                    tallas: tallasStr,
-                    tela: "Personalizada"
-                };
+                if (!urlImagen) throw new Error('Se necesita una imagen');
 
-                // Creamos un iframe oculto para el envío
+                const dataToSend = { id: id || null, nombre, precio, imagen: urlImagen, tallas, tela: "Personalizada" };
+
+                // Enviamos a Google Sheets
                 if (!document.getElementById('hidden_iframe')) {
                     const iframe = document.createElement('iframe');
-                    iframe.name = 'hidden_iframe';
-                    iframe.id = 'hidden_iframe';
-                    iframe.style.display = 'none';
+                    iframe.name = 'hidden_iframe'; iframe.id = 'hidden_iframe'; iframe.style.display = 'none';
                     document.body.appendChild(iframe);
                 }
-
                 const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = GOOGLE_SHEETS_API;
-                form.target = 'hidden_iframe';
-                
+                form.method = 'POST'; form.action = GOOGLE_SHEETS_API; form.target = 'hidden_iframe';
                 const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'data';
-                input.value = JSON.stringify(dataToSend);
-                form.appendChild(input);
-                
-                document.body.appendChild(form);
-                form.submit();
-                document.body.removeChild(form);
+                input.type = 'hidden'; input.name = 'data'; input.value = JSON.stringify(dataToSend);
+                form.appendChild(input); document.body.appendChild(form); form.submit(); document.body.removeChild(form);
 
-                alert("Producto enviado. La hoja puede tardar unos segundos en actualizarse.");
-                
-                // Limpiamos el formulario
-                document.getElementById('prod-nombre').value = '';
-                document.getElementById('prod-precio').value = '';
-                document.getElementById('prod-imagen-file').value = '';
-                document.getElementById('prod-tallas').value = '';
-                
-                // Recargamos la tabla después de 3 segundos
-                setTimeout(cargarProductos, 3000);
+                alert("Guardado exitosamente. Recargando tabla...");
+                cancelarEdicion();
+                setTimeout(cargarProductos, 2500);
 
             } catch (error) {
                 console.error(error);
-                alert("Error al subir: " + error.message);
+                alert("Error: " + error.message);
             } finally {
-                btnGuardar.innerHTML = 'Guardar Producto';
-                btnGuardar.disabled = false;
+                btn.innerHTML = document.getElementById('prod-id').value ? "Actualizar Producto" : "Guardar Producto";
+                btn.disabled = false;
             }
         }
 
-        // Eliminar producto (Solo aviso, se hace desde Google Sheets)
         function eliminarProducto(id) {
-            alert("Para eliminar un producto, por favor bórralo directamente desde tu hoja de Google Sheets. Es más seguro.");
+            alert("Para eliminar un producto, bórralo directamente desde tu hoja de Google Sheets.");
         }
     </script>
 </body>

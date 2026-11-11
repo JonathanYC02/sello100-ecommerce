@@ -141,3 +141,47 @@ body {
     .cart-content { padding: 1.5rem; width: 95%; }
     .whatsapp-float { width: 50px; height: 50px; font-size: 28px; bottom: 20px; right: 20px; }
 }
+/* =========================================
+   BOTÓN FLOTANTE DE ADMIN (Para Derian)
+   ========================================= */
+.admin-float {
+    position: fixed;
+    bottom: 30px;
+    left: 30px; /* Esquina inferior izquierda */
+    background: rgba(20, 20, 25, 0.9);
+    border: 2px solid var(--gold-primary);
+    color: var(--gold-primary);
+    padding: 10px 20px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-title);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.admin-float i {
+    font-size: 1.2rem;
+}
+
+.admin-float:hover {
+    background: var(--gold-primary);
+    color: var(--bg-color);
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+}
+
+/* En celular, que no estorbe */
+@media (max-width: 768px) {
+    .admin-float {
+        bottom: 20px;
+        left: 20px;
+        padding: 8px 15px;
+        font-size: 0.8rem;
+    }
+}
