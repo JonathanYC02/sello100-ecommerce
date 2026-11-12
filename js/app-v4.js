@@ -196,6 +196,13 @@ function openQuickview(id) {
         colorsContainer.appendChild(btn);
     });
 
+    function openQuickview(id) {
+    // ... tu código anterior ...
+
+    document.body.classList.add('cart-open'); // <-- AÑADE ESTA LÍNEA
+    document.getElementById('quickview-modal').classList.add('active');
+}
+
     document.getElementById('quickview-modal').classList.add('active');
 }
 
@@ -251,6 +258,7 @@ function moveCarousel(direction) {
 
 document.getElementById('close-quickview')?.addEventListener('click', () => {
     if (carouselInterval) clearInterval(carouselInterval);
+    document.body.classList.remove('cart-open');
     document.getElementById('quickview-modal').classList.remove('active');
 });
 

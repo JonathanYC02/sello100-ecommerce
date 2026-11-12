@@ -238,22 +238,33 @@ body.cart-open .whatsapp-float {
 }
 
 @media (max-width: 768px) {
-       /* ... tus otras reglas ... */
+ /* ... tus otras reglas ... */
 
-    /* ALINEACIÓN DE BOTONES FLOTANTES EN MÓVIL */
-    .admin-float { 
-        bottom: 20px; /* Misma altura que el de WhatsApp */
-        left: 20px; 
-        padding: 8px 15px; 
-        font-size: 0.8rem; 
+    /* Ajustar el modal para que no se pegue arriba */
+    .quickview-content, .cart-content {
+        margin-top: 40px; /* Deja espacio para la X */
+        max-height: 85vh; /* Para que no ocupe toda la pantalla */
     }
-    
-    .whatsapp-float { 
-        bottom: 20px; /* Misma altura que el de Admin */
-        right: 20px; 
-        width: 50px; 
-        height: 50px; 
-        font-size: 28px; 
+
+    /* Hacer la X más grande y visible */
+    .close-quickview, .close-cart {
+        top: 10px;
+        right: 15px;
+        font-size: 2.5rem; /* Más grande */
+        background: rgba(0,0,0,0.5); /* Fondo semi-transparente para que resalte */
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+    }
+
+    /* Ocultar botones flotantes cuando el modal está abierto */
+    body.cart-open .admin-float,
+    body.cart-open .whatsapp-float {
+        display: none; /* Desaparecen por completo */
     }
 }
 
