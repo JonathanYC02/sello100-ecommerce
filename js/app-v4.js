@@ -48,7 +48,7 @@ window.addEventListener('load', () => {
 });
 
 // ==========================================
-// 4. CARGA DE PRODUCTOS (SEPARADOS POR ;)
+// 4. CARGA DE PRODUCTOS (3 IMÁGENES SEPARADAS)
 // ==========================================
 async function cargarProductosDesdeDB() {
     return new Promise((resolve, reject) => {
@@ -56,16 +56,16 @@ async function cargarProductosDesdeDB() {
         window[callbackName] = (data) => {
             try {
                 productos = data.map(p => {
-                    // Separar imágenes por punto y coma (;)
-                    const arrayImagenes = p.imagen ? p.imagen.split(';').map(url => url.trim()).filter(url => url !== '') : [];
+                    // Juntar las imágenes que existan en un array
+                    const galeria = [p.imagen, p.imagen2, p.imagen3].filter(url => url && url.trim() !== '');
                     
                     return {
                         id: Number(p.id),
                         nombre: p.nombre,
                         precio: Number(p.precio),
                         descripcion: p.descripcion || 'Camiseta de algodón premium. Diseño exclusivo de Sello 100.',
-                        imagen: arrayImagenes[0] || '',
-                        galeria: arrayImagenes,
+                        imagen: galeria[0] || '',
+                        galeria: galeria, // Array con todas las fotos
                         tallas: p.tallas ? p.tallas.split(',') : [],
                         color: p.color || 'Negro, Blanco',
                         tela: p.tela
@@ -140,7 +140,6 @@ function openQuickview(id) {
     currentImages = prod.galeria || [prod.imagen];
     currentImageIndex = 0;
 
-    // Detener cualquier carrusel anterior
     if (carouselInterval) clearInterval(carouselInterval);
 
     document.getElementById('qv-title').innerText = prod.nombre;
@@ -150,10 +149,8 @@ function openQuickview(id) {
     const colorTextElement = document.getElementById('color-seleccionado');
     if (colorTextElement) colorTextElement.innerText = '(Elige uno)';
 
-    // Configurar Carrusel
     updateCarousel();
 
-    // Iniciar Auto-Play (cada 3 segundos)
     if (currentImages.length > 1) {
         carouselInterval = setInterval(() => {
             moveCarousel(1);
@@ -219,7 +216,6 @@ function updateCarousel() {
             dot.onclick = () => { 
                 currentImageIndex = index; 
                 updateCarousel(); 
-                // Reiniciar el temporizador al hacer clic manual
                 if (carouselInterval) clearInterval(carouselInterval);
                 carouselInterval = setInterval(() => moveCarousel(1), 3000);
             };
@@ -246,7 +242,6 @@ function moveCarousel(direction) {
     updateCarousel();
 }
 
-// Detener el carrusel al cerrar el modal
 document.getElementById('close-quickview')?.addEventListener('click', () => {
     if (carouselInterval) clearInterval(carouselInterval);
     document.getElementById('quickview-modal').classList.remove('active');
@@ -261,7 +256,7 @@ function addToCartFromQuickview() {
     saveCart();
     updateCartUI();
     
-    if (carouselInterval) clearInterval(carouselInterval); // Detener auto-play
+    if (carouselInterval) clearInterval(carouselInterval);
     document.getElementById('quickview-modal').classList.remove('active');
     mostrarToast("Producto añadido al carrito.", "success");
     const cartCount = document.getElementById('cart-count');

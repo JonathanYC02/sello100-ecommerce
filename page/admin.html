@@ -159,7 +159,7 @@
 
     <script>
         const GOOGLE_SHEETS_API = 'https://script.google.com/macros/s/AKfycbyAyFb8r7kqhfY8aLRfhk5vudQHRNrQAxhzgB7TynjUtLZcdcGPSzuBg82aTd-a799F/exec';
-        const IMGBB_API_KEY = 'TU_API_KEY_AQUI'; // ⚠️ PEGA TU API KEY AQUÍ
+        const IMGBB_API_KEY = 'd885018b58fe9232ff84c3cf4ba9ee76'; // ⚠️ PEGA TU API KEY AQUÍ
         const ADMIN_PASSWORD = 'sello100admin';
 
         function setSessionCookie() {
@@ -335,13 +335,18 @@
 
                 if (!url1) throw new Error('La imagen principal es obligatoria.');
 
-                // GUARDAR URLs SEPARADAS POR PUNTO Y COMA (;)
-                const imagenString = [url1, url2, url3].filter(u => u).join(';');
-
+                // Enviar campos separados
                 const dataToSend = { 
-                    id: id || null, nombre, precio, descripcion,
-                    imagen: imagenString, 
-                    tallas: tallasSeleccionadas, color: coloresSeleccionados, tela: "Personalizada" 
+                    id: id || null, 
+                    nombre, 
+                    precio, 
+                    descripcion,
+                    imagen: url1, 
+                    imagen2: url2 || '', 
+                    imagen3: url3 || '', 
+                    tallas: tallasSeleccionadas, 
+                    color: coloresSeleccionados, 
+                    tela: "Personalizada" 
                 };
 
                 btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
