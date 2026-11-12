@@ -205,7 +205,14 @@ function updateCarousel() {
     const dotsContainer = document.getElementById('carousel-dots');
     
     if (currentImages.length > 0) {
-        imgElement.src = currentImages[currentImageIndex];
+        // 1. Desvanecer la imagen actual
+        imgElement.style.opacity = 0;
+        
+        // 2. Esperar 300ms (mitad de la transición) y cambiar la imagen
+        setTimeout(() => {
+            imgElement.src = currentImages[currentImageIndex];
+            imgElement.style.opacity = 1; // Aparecer suavemente
+        }, 300);
     }
 
     dotsContainer.innerHTML = '';
@@ -217,7 +224,7 @@ function updateCarousel() {
                 currentImageIndex = index; 
                 updateCarousel(); 
                 if (carouselInterval) clearInterval(carouselInterval);
-                carouselInterval = setInterval(() => moveCarousel(1), 3000);
+                carouselInterval = setInterval(() => moveCarousel(1), 5000); // 5 segundos
             };
             dotsContainer.appendChild(dot);
         });

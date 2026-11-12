@@ -184,8 +184,10 @@ body.cart-open .whatsapp-float {
 .carousel-main-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain; /* Para que la imagen horizontal se vea completa */
+    background-color: #0a0a0c; /* Fondo oscuro para que combine */
     display: block;
+    transition: opacity 0.5s ease-in-out; /* Transición suave */
 }
 
 .carousel-btn {
