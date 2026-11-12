@@ -11,7 +11,12 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-    <div id="preloader"><div class="preloader-logo">SELLO 100</div><div class="preloader-spinner"></div></div>
+    <!-- PRELOADER -->
+    <div id="preloader">
+        <div class="preloader-logo">SELLO 100</div>
+        <div class="preloader-spinner"></div>
+    </div>
+
     <div id="toast-container"></div>
     <div class="bg-grid"></div>
     <div class="glow-orb orb-gold"></div>
@@ -84,10 +89,9 @@
         </div>
     </section>
 
-    <!-- MODAL DE VISTA RÁPIDA CON BARRA SUPERIOR -->
+    <!-- MODAL DE VISTA RÁPIDA -->
     <div class="quickview-modal" id="quickview-modal">
         <div class="quickview-content">
-            <!-- NUEVA BARRA SUPERIOR CON LA X -->
             <div class="quickview-header">
                 <h3 style="color: var(--text-muted); font-family: var(--font-title); font-size: 0.9rem; margin: 0; letter-spacing: 1px;">VISTA RÁPIDA</h3>
                 <button class="btn-close-modal" id="close-quickview" aria-label="Cerrar">&times;</button>
@@ -120,6 +124,7 @@
         </div>
     </div>
 
+    <!-- MODAL DEL CARRITO -->
     <div class="cart-modal" id="cart-modal">
         <div class="cart-content">
             <div class="quickview-header" style="margin-bottom: 1rem; padding-bottom: 0.5rem;">
@@ -144,6 +149,7 @@
         </div>
     </div>
 
+    <!-- MODAL DE CHECKOUT -->
     <div class="cart-modal" id="checkout-modal">
         <div class="cart-content" style="max-width: 600px;">
             <div class="quickview-header" style="margin-bottom: 1rem; padding-bottom: 0.5rem;">
@@ -211,5 +217,17 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <script src="js/app-v4.js"></script>
+    
+    <!-- SCRIPT DE SEGURIDAD PARA EL PRELOADER -->
+    <script>
+        // Forzar la desaparición del preloader después de 1.5 segundos sin importar qué pase
+        setTimeout(() => {
+            const preloader = document.getElementById('preloader');
+            if (preloader) {
+                preloader.classList.add('hidden');
+                setTimeout(() => preloader.remove(), 800);
+            }
+        }, 1500);
+    </script>
 </body>
 </html>
