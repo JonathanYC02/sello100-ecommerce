@@ -316,10 +316,33 @@ let map, marker;
 let localCoords = [-2.220962, -79.897079]; 
 
 function initMap() {
-    if (map) return; 
-    map = L.map('map').setView(localCoords, 13);
-    setTimeout(() => { map.invalidateSize(); }, 200);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+    if (map) {
+        // Si el mapa ya existe, forzamos su redibujado al abrir el modal
+        setTimeout(() => { map.invalidateSize(); }, 300);
+        return; 
+    }
+    
+    map = L.map('map', {
+        // Opciones de rendimiento para móviles
+        preferCanvas: true,      // Usa Canvas en lugar de SVG (más rápido en celular)
+        zoomAnimation: false,    // Desactiva animaciones de zoom (evita tirones)
+        fadeAnimation: false,    // Desactiva el fundido de los tiles (evita parpadeos)
+        markerZoomAnimation: false
+    }).setView(localCoords, 13);
+
+    // Forzamos el redibujado después de que el modal se haga visible
+    setTimeout(() => { map.invalidateSize(); }, 300);
+
+    // Cargar los tiles con opciones de precarga agresiva
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors',
+        keepBuffer: 4,           // Mantiene más tiles en memoria (evita recargas al mover)
+        updateWhenIdle: false,   // Carga tiles mientras se mueve (no espera a que se detenga)
+        updateWhenZooming: false,
+        updateInterval: 100      // Actualiza los tiles más rápido
+    }).addTo(map);
+
     L.marker(localCoords).addTo(map).bindPopup('<b>SELLO 100</b><br>Origen').openPopup();
 
     if (typeof L.Control.geocoder !== 'undefined') {
