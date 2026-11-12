@@ -84,13 +84,17 @@
         </div>
     </section>
 
-    <!-- MODAL DE VISTA RÁPIDA CON CARRUSEL -->
+    <!-- MODAL DE VISTA RÁPIDA CON BARRA SUPERIOR -->
     <div class="quickview-modal" id="quickview-modal">
         <div class="quickview-content">
-            <span class="close-quickview" id="close-quickview">&times;</span>
+            <!-- NUEVA BARRA SUPERIOR CON LA X -->
+            <div class="quickview-header">
+                <h3 style="color: var(--text-muted); font-family: var(--font-title); font-size: 0.9rem; margin: 0; letter-spacing: 1px;">VISTA RÁPIDA</h3>
+                <button class="btn-close-modal" id="close-quickview" aria-label="Cerrar">&times;</button>
+            </div>
+            
             <div class="quickview-grid">
                 <div class="quickview-gallery">
-                    <!-- Carrusel de imágenes -->
                     <div class="carousel-container">
                         <img id="qv-image" src="" alt="Producto" class="carousel-main-img">
                         <button class="carousel-btn prev" onclick="moveCarousel(-1)">&#10094;</button>
@@ -118,8 +122,10 @@
 
     <div class="cart-modal" id="cart-modal">
         <div class="cart-content">
-            <span class="close-cart" id="close-cart">&times;</span>
-            <h2>Tu Carrito</h2>
+            <div class="quickview-header" style="margin-bottom: 1rem; padding-bottom: 0.5rem;">
+                <h2 style="font-family: var(--font-title); font-size: 1.2rem; margin: 0;">Tu Carrito</h2>
+                <button class="btn-close-modal" id="close-cart" aria-label="Cerrar">&times;</button>
+            </div>
             <div id="cart-items" style="margin-bottom: 1rem; max-height: 150px; overflow-y: auto;"></div>
             <div class="shipping-section" style="margin-top: 1rem; border-top: 1px solid rgba(212, 175, 55, 0.2); padding-top: 1rem;">
                 <h3 style="font-size: 1rem; color: var(--gold-primary); margin-bottom: 0.5rem;"><i class="fa-solid fa-location-dot"></i> Ubicación de entrega</h3>
@@ -140,8 +146,11 @@
 
     <div class="cart-modal" id="checkout-modal">
         <div class="cart-content" style="max-width: 600px;">
-            <span class="close-cart" id="close-checkout">&times;</span>
-            <h2 style="color: var(--gold-primary); text-align: center; margin-bottom: 1rem;">Finalizar Compra</h2>
+            <div class="quickview-header" style="margin-bottom: 1rem; padding-bottom: 0.5rem;">
+                <h2 style="font-family: var(--font-title); font-size: 1.2rem; margin: 0; color: var(--gold-primary);">Finalizar Compra</h2>
+                <button class="btn-close-modal" id="close-checkout" aria-label="Cerrar">&times;</button>
+            </div>
+            
             <div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 8px; border: 1px solid #333; margin-bottom: 1rem;">
                 <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">1. Datos de Pago</h3>
                 <p style="font-size: 0.9rem; margin-bottom: 0.5rem;">Transfiere el total a:</p>

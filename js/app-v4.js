@@ -11,7 +11,7 @@ let selectedSize = null;
 let selectedColor = null;
 let currentImages = [];
 let currentImageIndex = 0;
-let carouselInterval = null; // Variable para el auto-play
+let carouselInterval = null;
 
 // ==========================================
 // 2. SISTEMA DE NOTIFICACIONES (TOASTS)
@@ -48,7 +48,7 @@ window.addEventListener('load', () => {
 });
 
 // ==========================================
-// 4. CARGA DE PRODUCTOS (3 IMÁGENES SEPARADAS)
+// 4. CARGA DE PRODUCTOS
 // ==========================================
 async function cargarProductosDesdeDB() {
     return new Promise((resolve, reject) => {
@@ -56,16 +56,14 @@ async function cargarProductosDesdeDB() {
         window[callbackName] = (data) => {
             try {
                 productos = data.map(p => {
-                    // Juntar las imágenes que existan en un array
                     const galeria = [p.imagen, p.imagen2, p.imagen3].filter(url => url && url.trim() !== '');
-                    
                     return {
                         id: Number(p.id),
                         nombre: p.nombre,
                         precio: Number(p.precio),
                         descripcion: p.descripcion || 'Camiseta de algodón premium. Diseño exclusivo de Sello 100.',
                         imagen: galeria[0] || '',
-                        galeria: galeria, // Array con todas las fotos
+                        galeria: galeria,
                         tallas: p.tallas ? p.tallas.split(',') : [],
                         color: p.color || 'Negro, Blanco',
                         tela: p.tela
@@ -128,7 +126,7 @@ function aplicarFiltros(termino, categoria) {
 }
 
 // ==========================================
-// 6. VISTA RÁPIDA CON CARRUSEL AUTOMÁTICO
+// 6. VISTA RÁPIDA CON CARRUSEL
 // ==========================================
 function openQuickview(id) {
     const prod = productos.find(p => p.id === id);
@@ -154,7 +152,7 @@ function openQuickview(id) {
     if (currentImages.length > 1) {
         carouselInterval = setInterval(() => {
             moveCarousel(1);
-        }, 5000);
+        }, 5000); // 5 SEGUNDOS
     }
 
     const sizesContainer = document.getElementById('qv-sizes');
@@ -196,29 +194,20 @@ function openQuickview(id) {
         colorsContainer.appendChild(btn);
     });
 
-    function openQuickview(id) {
-    // ... tu código anterior ...
-
-    document.body.classList.add('cart-open'); // <-- AÑADE ESTA LÍNEA
+    document.body.classList.add('cart-open');
     document.getElementById('quickview-modal').classList.add('active');
 }
 
-    document.getElementById('quickview-modal').classList.add('active');
-}
-
-// --- LÓGICA DEL CARRUSEL ---
+// --- LÓGICA DEL CARRUSEL CON FADE ---
 function updateCarousel() {
     const imgElement = document.getElementById('qv-image');
     const dotsContainer = document.getElementById('carousel-dots');
     
     if (currentImages.length > 0) {
-        // 1. Desvanecer la imagen actual
         imgElement.style.opacity = 0;
-        
-        // 2. Esperar 300ms (mitad de la transición) y cambiar la imagen
         setTimeout(() => {
             imgElement.src = currentImages[currentImageIndex];
-            imgElement.style.opacity = 1; // Aparecer suavemente
+            imgElement.style.opacity = 1;
         }, 300);
     }
 
@@ -231,7 +220,7 @@ function updateCarousel() {
                 currentImageIndex = index; 
                 updateCarousel(); 
                 if (carouselInterval) clearInterval(carouselInterval);
-                carouselInterval = setInterval(() => moveCarousel(1), 5000); // 5 segundos
+                carouselInterval = setInterval(() => moveCarousel(1), 5000);
             };
             dotsContainer.appendChild(dot);
         });
@@ -272,6 +261,7 @@ function addToCartFromQuickview() {
     updateCartUI();
     
     if (carouselInterval) clearInterval(carouselInterval);
+    document.body.classList.remove('cart-open');
     document.getElementById('quickview-modal').classList.remove('active');
     mostrarToast("Producto añadido al carrito.", "success");
     const cartCount = document.getElementById('cart-count');
@@ -320,7 +310,7 @@ function removeFromCart(index) {
 }
 
 // ==========================================
-// 8. MAPA CON BUSCADOR Y CHECKOUT
+// 8. MAPA Y CHECKOUT
 // ==========================================
 let map, marker;
 let localCoords = [-2.220962, -79.897079]; 
