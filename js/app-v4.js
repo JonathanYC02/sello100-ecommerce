@@ -434,15 +434,58 @@ if (fileInput) {
 }
 
 async function subirComprobante(file) {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('to_format', 'jpg');
-    const response = await fetch('https://cleverutils.com/api/v1/convert', { method: 'POST', body: formData });
-    const result = await response.json();
-    if (result.data && result.data.output) return result.data.output.url;
-    throw new Error('Error subiendo imagen');
-}
+    // 1. Comprimir la imagen para que pese menos y suba rápido
+    const imagenComprimida = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const maxWidth = 800;
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        resolve(new File([blob], "comprobante.jpg", { type: "image/jpeg" }));
+                    } else {
+                        reject(new Error("Error al comprimir imagen"));
+                    }
+                }, 'image/jpeg', 0.7);
+            };
+            img.onerror = () => reject(new Error("Error al leer imagen"));
+        };
+        reader.onerror = () => reject(new Error("Error al cargar archivo"));
+    });
 
+    // 2. Subir a ImgBB usando la misma API Key del admin
+    const IMGBB_API_KEY = 'd885018b58fe9232ff84c3cf4ba9ee76'; // ⚠️ ASEGÚRATE DE PONER TU API KEY AQUÍ
+    
+    const formData = new FormData();
+    formData.append('image', imagenComprimida);
+
+    const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+        method: 'POST',
+        body: formData
+    });
+
+    const result = await response.json();
+
+    if (result.success && result.data && result.data.url) {
+        return result.data.url;
+    } else {
+        throw new Error(result.error ? result.error.message : 'Error al subir el comprobante');
+    }
+}
 async function finalizarCompra() {
     const btn = document.getElementById('btn-finalizar');
     const nombre = document.getElementById('nombre-cliente').value.trim();
