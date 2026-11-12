@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/main.css">
     <style>
+        /* ... TUS ESTILOS SE MANTIENEN IGUAL ... */
         .admin-container { max-width: 1200px; margin: 80px auto 50px; padding: 2rem; background: var(--bg-card); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 16px; position: relative; }
         .admin-title { font-family: var(--font-title); color: var(--gold-primary); text-align: center; margin-bottom: 0.5rem; }
         .admin-subtitle { text-align: center; color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
@@ -205,7 +206,6 @@
                     tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#888;">No hay productos aún.</td></tr>';
                 } else {
                     data.forEach(prod => {
-                        // Mostrar solo la primera imagen en la tabla
                         const primeraImagen = prod.imagen ? prod.imagen.split(';')[0] : '';
                         tbody.innerHTML += `
                             <tr id="fila-${prod.id}">
@@ -234,9 +234,8 @@
             document.getElementById('prod-id').value = prod.id;
             document.getElementById('prod-nombre').value = prod.nombre;
             document.getElementById('prod-precio').value = prod.precio;
-            document.getElementById('prod-descripcion').value = prod.descripcion || '';
+            document.getElementById('prod-descripcion').value = prod.descripcion || ''; // <-- CARGAR DESCRIPCIÓN
             
-            // Cargar imágenes separadas por ';'
             const imagenes = prod.imagen ? prod.imagen.split(';') : [];
             document.getElementById('prod-imagen-url').value = imagenes[0] || '';
             document.getElementById('prod-imagen-url2').value = imagenes[1] || '';
@@ -275,7 +274,7 @@
             document.getElementById('prod-id').value = '';
             document.getElementById('prod-nombre').value = '';
             document.getElementById('prod-precio').value = '';
-            document.getElementById('prod-descripcion').value = '';
+            document.getElementById('prod-descripcion').value = ''; // <-- LIMPIAR DESCRIPCIÓN
             document.getElementById('prod-imagen-url').value = '';
             document.getElementById('prod-imagen-url2').value = '';
             document.getElementById('prod-imagen-url3').value = '';
@@ -292,7 +291,7 @@
             const id = document.getElementById('prod-id').value;
             const nombre = document.getElementById('prod-nombre').value.trim();
             const precio = parseFloat(document.getElementById('prod-precio').value);
-            const descripcion = document.getElementById('prod-descripcion').value.trim();
+            const descripcion = document.getElementById('prod-descripcion').value.trim(); // <-- OBTENER DESCRIPCIÓN
             const file1 = document.getElementById('prod-imagen-file').files[0];
             const file2 = document.getElementById('prod-imagen-file2').files[0];
             const file3 = document.getElementById('prod-imagen-file3').files[0];
@@ -335,12 +334,12 @@
 
                 if (!url1) throw new Error('La imagen principal es obligatoria.');
 
-                // Enviar campos separados
+                // ENVIAR DESCRIPCIÓN AL APPS SCRIPT
                 const dataToSend = { 
                     id: id || null, 
                     nombre, 
                     precio, 
-                    descripcion,
+                    descripcion, 
                     imagen: url1, 
                     imagen2: url2 || '', 
                     imagen3: url3 || '', 

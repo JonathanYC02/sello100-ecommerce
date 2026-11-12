@@ -61,7 +61,7 @@ async function cargarProductosDesdeDB() {
                         id: Number(p.id),
                         nombre: p.nombre,
                         precio: Number(p.precio),
-                        descripcion: p.descripcion || 'Camiseta de algodón premium. Diseño exclusivo de Sello 100.',
+                        descripcion: p.descripcion || '', // <-- SIN TEXTO POR DEFECTO
                         imagen: galeria[0] || '',
                         galeria: galeria,
                         tallas: p.tallas ? p.tallas.split(',') : [],
@@ -142,7 +142,8 @@ function openQuickview(id) {
 
     document.getElementById('qv-title').innerText = prod.nombre;
     document.getElementById('qv-price').innerText = `$${prod.precio.toFixed(2)}`;
-    document.getElementById('qv-desc').innerText = prod.descripcion;
+    // Mostrar descripción o un texto neutro si está vacía
+    document.getElementById('qv-desc').innerText = prod.descripcion || 'Sin descripción adicional.'; 
 
     const colorTextElement = document.getElementById('color-seleccionado');
     if (colorTextElement) colorTextElement.innerText = '(Elige uno)';
@@ -316,33 +317,10 @@ let map, marker;
 let localCoords = [-2.220962, -79.897079]; 
 
 function initMap() {
-    if (map) {
-        // Si el mapa ya existe, forzamos su redibujado al abrir el modal
-        setTimeout(() => { map.invalidateSize(); }, 300);
-        return; 
-    }
-    
-    map = L.map('map', {
-        // Opciones de rendimiento para móviles
-        preferCanvas: true,      // Usa Canvas en lugar de SVG (más rápido en celular)
-        zoomAnimation: false,    // Desactiva animaciones de zoom (evita tirones)
-        fadeAnimation: false,    // Desactiva el fundido de los tiles (evita parpadeos)
-        markerZoomAnimation: false
-    }).setView(localCoords, 13);
-
-    // Forzamos el redibujado después de que el modal se haga visible
-    setTimeout(() => { map.invalidateSize(); }, 300);
-
-    // Cargar los tiles con opciones de precarga agresiva
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors',
-        keepBuffer: 4,           // Mantiene más tiles en memoria (evita recargas al mover)
-        updateWhenIdle: false,   // Carga tiles mientras se mueve (no espera a que se detenga)
-        updateWhenZooming: false,
-        updateInterval: 100      // Actualiza los tiles más rápido
-    }).addTo(map);
-
+    if (map) return; 
+    map = L.map('map').setView(localCoords, 13);
+    setTimeout(() => { map.invalidateSize(); }, 200);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
     L.marker(localCoords).addTo(map).bindPopup('<b>SELLO 100</b><br>Origen').openPopup();
 
     if (typeof L.Control.geocoder !== 'undefined') {
@@ -434,58 +412,15 @@ if (fileInput) {
 }
 
 async function subirComprobante(file) {
-    // 1. Comprimir la imagen para que pese menos y suba rápido
-    const imagenComprimida = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (event) => {
-            const img = new Image();
-            img.src = event.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                let width = img.width;
-                let height = img.height;
-                const maxWidth = 800;
-                if (width > maxWidth) {
-                    height = Math.round((height * maxWidth) / width);
-                    width = maxWidth;
-                }
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                canvas.toBlob((blob) => {
-                    if (blob) {
-                        resolve(new File([blob], "comprobante.jpg", { type: "image/jpeg" }));
-                    } else {
-                        reject(new Error("Error al comprimir imagen"));
-                    }
-                }, 'image/jpeg', 0.7);
-            };
-            img.onerror = () => reject(new Error("Error al leer imagen"));
-        };
-        reader.onerror = () => reject(new Error("Error al cargar archivo"));
-    });
-
-    // 2. Subir a ImgBB usando la misma API Key del admin
-    const IMGBB_API_KEY = 'd885018b58fe9232ff84c3cf4ba9ee76'; // ⚠️ ASEGÚRATE DE PONER TU API KEY AQUÍ
-    
     const formData = new FormData();
-    formData.append('image', imagenComprimida);
-
-    const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-        method: 'POST',
-        body: formData
-    });
-
+    formData.append('file', file);
+    formData.append('to_format', 'jpg');
+    const response = await fetch('https://cleverutils.com/api/v1/convert', { method: 'POST', body: formData });
     const result = await response.json();
-
-    if (result.success && result.data && result.data.url) {
-        return result.data.url;
-    } else {
-        throw new Error(result.error ? result.error.message : 'Error al subir el comprobante');
-    }
+    if (result.data && result.data.output) return result.data.output.url;
+    throw new Error('Error subiendo imagen');
 }
+
 async function finalizarCompra() {
     const btn = document.getElementById('btn-finalizar');
     const nombre = document.getElementById('nombre-cliente').value.trim();
