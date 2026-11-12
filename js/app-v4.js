@@ -154,7 +154,7 @@ function openQuickview(id) {
     if (currentImages.length > 1) {
         carouselInterval = setInterval(() => {
             moveCarousel(1);
-        }, 3000);
+        }, 5000);
     }
 
     const sizesContainer = document.getElementById('qv-sizes');
