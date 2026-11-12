@@ -11,6 +11,7 @@ let selectedSize = null;
 let selectedColor = null;
 let currentImages = [];
 let currentImageIndex = 0;
+let carouselInterval = null; // Variable para el auto-play
 
 // ==========================================
 // 2. SISTEMA DE NOTIFICACIONES (TOASTS)
@@ -47,7 +48,7 @@ window.addEventListener('load', () => {
 });
 
 // ==========================================
-// 4. CARGA DE PRODUCTOS (MÚLTIPLES IMÁGENES)
+// 4. CARGA DE PRODUCTOS (SEPARADOS POR ;)
 // ==========================================
 async function cargarProductosDesdeDB() {
     return new Promise((resolve, reject) => {
@@ -55,16 +56,16 @@ async function cargarProductosDesdeDB() {
         window[callbackName] = (data) => {
             try {
                 productos = data.map(p => {
-                    // AQUÍ ESTÁ EL TRUCO: Separamos la cadena de texto por comas
-                    const arrayImagenes = p.imagen ? p.imagen.split(',').map(url => url.trim()).filter(url => url !== '') : [];
+                    // Separar imágenes por punto y coma (;)
+                    const arrayImagenes = p.imagen ? p.imagen.split(';').map(url => url.trim()).filter(url => url !== '') : [];
                     
                     return {
                         id: Number(p.id),
                         nombre: p.nombre,
                         precio: Number(p.precio),
                         descripcion: p.descripcion || 'Camiseta de algodón premium. Diseño exclusivo de Sello 100.',
-                        imagen: arrayImagenes[0] || '', // La primera foto para el index
-                        galeria: arrayImagenes, // El array con TODAS las fotos para el carrusel
+                        imagen: arrayImagenes[0] || '',
+                        galeria: arrayImagenes,
                         tallas: p.tallas ? p.tallas.split(',') : [],
                         color: p.color || 'Negro, Blanco',
                         tela: p.tela
@@ -85,6 +86,7 @@ async function cargarProductosDesdeDB() {
         if (grid) grid.innerHTML = `<p style="text-align:center; color:#ff4444; grid-column: 1/-1;">Error al cargar productos.</p>`;
     });
 }
+
 // ==========================================
 // 5. RENDERIZADO Y FILTROS
 // ==========================================
@@ -126,7 +128,7 @@ function aplicarFiltros(termino, categoria) {
 }
 
 // ==========================================
-// 6. VISTA RÁPIDA CON CARRUSEL
+// 6. VISTA RÁPIDA CON CARRUSEL AUTOMÁTICO
 // ==========================================
 function openQuickview(id) {
     const prod = productos.find(p => p.id === id);
@@ -138,16 +140,25 @@ function openQuickview(id) {
     currentImages = prod.galeria || [prod.imagen];
     currentImageIndex = 0;
 
+    // Detener cualquier carrusel anterior
+    if (carouselInterval) clearInterval(carouselInterval);
+
     document.getElementById('qv-title').innerText = prod.nombre;
     document.getElementById('qv-price').innerText = `$${prod.precio.toFixed(2)}`;
     document.getElementById('qv-desc').innerText = prod.descripcion;
 
-    // Resetear texto del color
     const colorTextElement = document.getElementById('color-seleccionado');
     if (colorTextElement) colorTextElement.innerText = '(Elige uno)';
 
     // Configurar Carrusel
     updateCarousel();
+
+    // Iniciar Auto-Play (cada 3 segundos)
+    if (currentImages.length > 1) {
+        carouselInterval = setInterval(() => {
+            moveCarousel(1);
+        }, 3000);
+    }
 
     const sizesContainer = document.getElementById('qv-sizes');
     sizesContainer.innerHTML = '';
@@ -182,8 +193,6 @@ function openQuickview(id) {
             document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             if(color.toLowerCase().includes('blanco')) btn.style.border = '2px solid var(--gold-primary)';
-            
-            // Actualizar texto del color
             if (colorTextElement) colorTextElement.innerText = `(${color.trim()})`;
         };
         
@@ -202,18 +211,22 @@ function updateCarousel() {
         imgElement.src = currentImages[currentImageIndex];
     }
 
-    // Crear puntos indicadores
     dotsContainer.innerHTML = '';
     if (currentImages.length > 1) {
         currentImages.forEach((_, index) => {
             const dot = document.createElement('span');
             dot.className = `carousel-dot ${index === currentImageIndex ? 'active' : ''}`;
-            dot.onclick = () => { currentImageIndex = index; updateCarousel(); };
+            dot.onclick = () => { 
+                currentImageIndex = index; 
+                updateCarousel(); 
+                // Reiniciar el temporizador al hacer clic manual
+                if (carouselInterval) clearInterval(carouselInterval);
+                carouselInterval = setInterval(() => moveCarousel(1), 3000);
+            };
             dotsContainer.appendChild(dot);
         });
     }
 
-    // Ocultar flechas si solo hay una imagen
     const prevBtn = document.querySelector('.carousel-btn.prev');
     const nextBtn = document.querySelector('.carousel-btn.next');
     if (currentImages.length <= 1) {
@@ -233,7 +246,11 @@ function moveCarousel(direction) {
     updateCarousel();
 }
 
-document.getElementById('close-quickview')?.addEventListener('click', () => document.getElementById('quickview-modal').classList.remove('active'));
+// Detener el carrusel al cerrar el modal
+document.getElementById('close-quickview')?.addEventListener('click', () => {
+    if (carouselInterval) clearInterval(carouselInterval);
+    document.getElementById('quickview-modal').classList.remove('active');
+});
 
 function addToCartFromQuickview() {
     if (!selectedSize) return mostrarToast("Por favor, selecciona una talla.", "error");
@@ -243,6 +260,8 @@ function addToCartFromQuickview() {
     cart.push(itemToAdd);
     saveCart();
     updateCartUI();
+    
+    if (carouselInterval) clearInterval(carouselInterval); // Detener auto-play
     document.getElementById('quickview-modal').classList.remove('active');
     mostrarToast("Producto añadido al carrito.", "success");
     const cartCount = document.getElementById('cart-count');

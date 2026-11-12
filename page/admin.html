@@ -94,19 +94,16 @@
                 
                 <div class="admin-form-group">
                     <label>Imagen Principal (Obligatoria)</label>
-                    <small>Sube la foto principal del producto.</small>
                     <input type="file" id="prod-imagen-file" accept="image/*" class="admin-input" style="padding: 0.5rem;">
                     <input type="hidden" id="prod-imagen-url">
                 </div>
                 <div class="admin-form-group">
                     <label>Imagen Secundaria 1 (Opcional)</label>
-                    <small>Ej: Foto del color o detalle.</small>
                     <input type="file" id="prod-imagen-file2" accept="image/*" class="admin-input" style="padding: 0.5rem;">
                     <input type="hidden" id="prod-imagen-url2">
                 </div>
                 <div class="admin-form-group">
                     <label>Imagen Secundaria 2 (Opcional)</label>
-                    <small>Ej: Foto con una persona usando la prenda.</small>
                     <input type="file" id="prod-imagen-file3" accept="image/*" class="admin-input" style="padding: 0.5rem;">
                     <input type="hidden" id="prod-imagen-url3">
                 </div>
@@ -208,9 +205,11 @@
                     tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#888;">No hay productos aún.</td></tr>';
                 } else {
                     data.forEach(prod => {
+                        // Mostrar solo la primera imagen en la tabla
+                        const primeraImagen = prod.imagen ? prod.imagen.split(';')[0] : '';
                         tbody.innerHTML += `
                             <tr id="fila-${prod.id}">
-                                <td><img src="${prod.imagen}" class="admin-img-preview" alt="img" onerror="this.src='https://via.placeholder.com/50'"></td>
+                                <td><img src="${primeraImagen}" class="admin-img-preview" alt="img" onerror="this.src='https://via.placeholder.com/50'"></td>
                                 <td>${prod.nombre}</td>
                                 <td style="color: var(--gold-primary); font-weight: bold;">$${Number(prod.precio).toFixed(2)}</td>
                                 <td>
@@ -237,8 +236,8 @@
             document.getElementById('prod-precio').value = prod.precio;
             document.getElementById('prod-descripcion').value = prod.descripcion || '';
             
-            // Cargar imágenes separadas por coma
-            const imagenes = prod.imagen ? prod.imagen.split(',') : [];
+            // Cargar imágenes separadas por ';'
+            const imagenes = prod.imagen ? prod.imagen.split(';') : [];
             document.getElementById('prod-imagen-url').value = imagenes[0] || '';
             document.getElementById('prod-imagen-url2').value = imagenes[1] || '';
             document.getElementById('prod-imagen-url3').value = imagenes[2] || '';
@@ -336,8 +335,8 @@
 
                 if (!url1) throw new Error('La imagen principal es obligatoria.');
 
-                // Guardar URLs separadas por coma
-                const imagenString = [url1, url2, url3].filter(u => u).join(',');
+                // GUARDAR URLs SEPARADAS POR PUNTO Y COMA (;)
+                const imagenString = [url1, url2, url3].filter(u => u).join(';');
 
                 const dataToSend = { 
                     id: id || null, nombre, precio, descripcion,
